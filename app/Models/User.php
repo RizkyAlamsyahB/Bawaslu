@@ -3,6 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Tps;
+use App\Models\Kecamatan;
+use App\Models\Kelurahan;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
@@ -51,4 +54,19 @@ class User extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
     ];
+    public function kecamatan()
+    {
+        return $this->belongsTo(Kecamatan::class, 'kecamatan_id');
+    }
+
+    public function kelurahan()
+    {
+        return $this->belongsTo(Kelurahan::class, 'kelurahan_id');
+    }
+
+    public function tps()
+    {
+        return $this->belongsTo(Tps::class, 'tps_id');
+    }
+
 }
