@@ -8,7 +8,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-class UserSeeder extends Seeder
+class KotaSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -18,13 +18,12 @@ class UserSeeder extends Seeder
         //
         User::create([
             'id' => (string) Str::uuid(), // Gunakan UUID untuk ID
-            'name' => 'Super Admin',
+            'name' => 'Kota',
             'phone' => '1234567890', // Nomor telepon (sesuaikan)
-            'username' => 'superadmin', // Username untuk super admin
+            'username' => 'kota', // Username untuk super admin
             'password' => Hash::make('password123'), // Password yang terenkripsi
-            'role' => 'super_admin', // Role user
+            'role' => 'kota', // Role user
         ]
     );
-        //
     }
 }
