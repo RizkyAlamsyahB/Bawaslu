@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <!-- Meta Tags -->
     <meta charset="utf-8">
@@ -28,6 +29,7 @@
     <!-- Additional CSS (if any) -->
     @stack('css')
 </head>
+
 <body>
     <div id="app">
         <div class="main-wrapper">
@@ -63,7 +65,13 @@
     <script src="{{ asset('js/scripts.js') }}"></script>
     <script src="{{ asset('js/custom.js') }}"></script>
 
+    {{-- Sweeetalert --}}
+  
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
     <!-- Additional JS (if any) -->
     @stack('scripts')
 </body>
+
 </html>

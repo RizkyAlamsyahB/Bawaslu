@@ -37,27 +37,14 @@
                         </div>
 
                         <div class="form-group text-left">
-                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <button type="submit" class="btn btn-warning">Simpan</button>
                             <a href="{{ route('kecamatan.index') }}" class="btn btn-secondary">Kembali</a>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                Test Dropdown
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-        </div>
- <!-- jQuery and Bootstrap JS -->
- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-...">
- </script>
+
 
     </section>
 @endsection

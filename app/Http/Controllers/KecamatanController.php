@@ -19,7 +19,6 @@ class KecamatanController extends Controller
     public function index()
     {
         if (request()->ajax()) {
-            // Menggunakan query builder agar lebih fleksibel
             $data = Kecamatan::all();
 
             return DataTables::of($data)
@@ -29,21 +28,18 @@ class KecamatanController extends Controller
                     $deleteUrl = route('kecamatan.destroy', $row->id);
 
                     return '
-                        <div class="dropdown dropdown">
-                            <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton-' . $row->id . '" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Actions
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton-' . $row->id . '">
-                                <li><a href="' . $editUrl . '" class="dropdown-item">
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-' . $row->id . '">
+                                <a href="' . $editUrl . '" class="dropdown-item" role="button">
                                     <i class="bi bi-pencil"></i> Edit
-                                </a></li>
-                                <li><form action="' . $deleteUrl . '" method="POST" onsubmit="return confirm(\'Apakah Anda yakin ingin menghapus kecamatan ini?\');">
-                                    ' . csrf_field() . method_field('DELETE') . '
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </form></li>
-                            </ul>
+                                </a>
+                                <a href="javascript:void(0);" class="dropdown-item text-danger deleteButton" role="button" data-url="' . $deleteUrl . '">
+                                    <i class="bi bi-trash"></i> Delete
+                                </a>
+                            </div>
                         </div>';
                 })
                 ->rawColumns(['action'])
@@ -52,8 +48,6 @@ class KecamatanController extends Controller
 
         return view('admin.kecamatan.index');
     }
-
-
 
     // Menampilkan form untuk membuat kecamatan
     public function create()
@@ -81,11 +75,10 @@ class KecamatanController extends Controller
         }
     }
 
-
     // Menampilkan form untuk mengedit kecamatan
     public function edit(Kecamatan $kecamatan)
     {
-        return view('admin.pages.kecamatan.edit', compact('kecamatan'));
+        return view('admin.kecamatan.edit', compact('kecamatan'));
     }
 
     // Memperbarui data kecamatan
