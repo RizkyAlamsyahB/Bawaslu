@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TpsController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KecamatanController;
 use App\Http\Controllers\KelurahanController;
@@ -24,7 +25,9 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+})
+    ->middleware(['auth'])
+    ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/blank-page', [HomeController::class, 'blank'])->name('blank');
@@ -41,6 +44,15 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::resource('kecamatan', KecamatanController::class);
     Route::resource('kelurahan', KelurahanController::class);
     Route::resource('tps', TpsController::class);
+
+    Route::get('/get-kelurahans/{kecamatan}', [UserController::class, 'getKelurahans']);
+    Route::get('/get-tps/{kelurahan}', [UserController::class, 'getTps']);
+
+
+    // Rute untuk mengambil TPS berdasarkan Kelurahan
+    Route::get('get-tps-by-kelurahan/{kelurahan_id}', [TpsController::class, 'getTpsByKelurahan']);
+
+    Route::resource('user', UserController::class);
 });
 
 Route::middleware(['auth', 'role:kecamatan'])->group(function () {
@@ -59,4 +71,4 @@ Route::middleware(['auth', 'role:kota'])->group(function () {
     // Routes untuk kota
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

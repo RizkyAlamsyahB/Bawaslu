@@ -16,13 +16,14 @@ class KecamatanController extends Controller
     }
 
     // Menampilkan data kecamatan dengan server-side processing
+
     public function index()
     {
         if (request()->ajax()) {
-            $data = Kecamatan::all();
+            $data = Kecamatan::query();
 
             return DataTables::of($data)
-                ->addIndexColumn()
+                ->addIndexColumn() // Tambahkan baris ini
                 ->addColumn('action', function ($row) {
                     $editUrl = route('kecamatan.edit', $row->id);
                     $deleteUrl = route('kecamatan.destroy', $row->id);
@@ -33,13 +34,13 @@ class KecamatanController extends Controller
                                 Actions
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-' . $row->id . '">
-                                <a href="' . $editUrl . '" class="dropdown-item" role="button">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
-                                <a href="javascript:void(0);" class="dropdown-item text-danger deleteButton" role="button" data-url="' . $deleteUrl . '">
-                                    <i class="bi bi-trash"></i> Delete
-                                </a>
-                            </div>
+                                    <a href="' . $editUrl . '" class="dropdown-item">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+                                    <a href="javascript:void(0);" class="dropdown-item text-danger deleteButton" data-url="' . $deleteUrl . '">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </a>
+                                </div>
                         </div>';
                 })
                 ->rawColumns(['action'])
@@ -48,6 +49,8 @@ class KecamatanController extends Controller
 
         return view('admin.kecamatan.index');
     }
+
+
 
     // Menampilkan form untuk membuat kecamatan
     public function create()

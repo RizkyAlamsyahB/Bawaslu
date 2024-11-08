@@ -16,16 +16,14 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $keyType = 'string';  // Gunakan string untuk UUID
-    public $incrementing = false;  // Nonaktifkan auto-increment karena UUID tidak auto-increment
-
+    protected $keyType = 'string'; // Gunakan string untuk UUID
+    public $incrementing = false; // Nonaktifkan auto-increment karena UUID tidak auto-increment
     protected $fillable = ['name', 'phone', 'password', 'username', 'role', 'kecamatan_id', 'kelurahan_id', 'tps_id'];
-
     protected static function booted()
     {
         static::creating(function ($user) {
             if (empty($user->id)) {
-                $user->id = (string) Str::uuid();  // Generate UUID saat pembuatan user
+                $user->id = (string) Str::uuid(); // Generate UUID saat pembuatan user
             }
         });
     }
@@ -41,10 +39,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
     /**
      * The attributes that should be cast.
@@ -68,5 +63,4 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Tps::class, 'tps_id');
     }
-
 }

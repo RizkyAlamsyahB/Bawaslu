@@ -43,6 +43,6 @@ class Kelurahan extends Model
     {
         return $this->hasMany(Tps::class, 'kelurahan_id');
     }
-
+    public function users() { return $this->hasMany(User::class); }
 
 }

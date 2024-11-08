@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Data Kecamatan')
+@section('title', 'Data Users')
 
 @push('style')
     <!-- DataTables CSS -->
@@ -10,16 +10,16 @@
 @section('content')
     <section class="section">
         <div class="section-header">
-            <h1>Data Kecamatan</h1>
+            <h1>Data Users</h1>
         </div>
 
         <div class="section-body">
-            <h2 class="section-title">Tabel Data Kecamatan</h2>
+            <h2 class="section-title">Tabel Data Users</h2>
             <p class="section-lead">
-                Halaman ini menampilkan data Kecamatan yang diambil dari server menggunakan server-side processing.
-                Anda dapat menambahkan, mengedit, atau menghapus data Kecamatan di sini.
+                Halaman ini menampilkan data Users yang diambil dari server menggunakan server-side processing.
+                Anda dapat menambahkan, mengedit, atau menghapus data Users di sini.
             </p>
-            <a href="{{ route('kecamatan.create') }}" class="btn btn-warning mb-3">Tambah Kecamatan</a>
+            <a href="{{ route('user.create') }}" class="btn btn-warning mb-3">Tambah User</a>
 
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -39,22 +39,21 @@
                 </div>
             @endif
 
-
-
-
             <div class="card">
                 <div class="card-header">
-                    <h4>Daftar Kecamatan</h4>
+                    <h4>Daftar Users</h4>
                 </div>
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-bordered" id="kecamatanTable">
+                            <table class="table table-bordered" id="usersTable">
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Nama Kecamatan</th>
-                                        <th>Kode Kecamatan</th>
+                                        <th>Nama</th>
+                                        <th>Phone</th>
+                                        <th>Username</th>
+                                        <th>Role</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -81,7 +80,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Apakah Anda yakin ingin menghapus kecamatan ini?
+                    Apakah Anda yakin ingin menghapus user ini?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
@@ -99,10 +98,10 @@
 
     <script>
         $(document).ready(function() {
-            var table = $('#kecamatanTable').DataTable({
+            var table = $('#usersTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('kecamatan.index') }}',
+                ajax: '{{ route('user.index') }}',
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -110,12 +109,20 @@
                         searchable: false
                     },
                     {
-                        data: 'nama_kecamatan',
-                        name: 'nama_kecamatan'
+                        data: 'name',
+                        name: 'name'
                     },
                     {
-                        data: 'kode_kecamatan',
-                        name: 'kode_kecamatan'
+                        data: 'phone',
+                        name: 'phone'
+                    },
+                    {
+                        data: 'username',
+                        name: 'username'
+                    },
+                    {
+                        data: 'role',
+                        name: 'role'
                     },
                     {
                         data: 'action',
@@ -127,10 +134,9 @@
                 pageLength: 10,
                 lengthMenu: [10, 25, 50, 100],
                 drawCallback: function() {
-                    $('#kecamatanTable .dropdown-toggle').dropdown();
+                    $('#usersTable .dropdown-toggle').dropdown();
                 }
             });
         });
     </script>
-  
 @endpush
