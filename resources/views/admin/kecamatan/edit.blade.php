@@ -11,20 +11,12 @@
         <div class="section-body">
             <h2 class="section-title">Formulir Edit Kecamatan</h2>
             <p class="section-lead">
-<<<<<<< HEAD
                 Halaman ini memungkinkan Anda untuk mengedit data kecamatan yang ada.
-=======
-                Halaman ini memungkinkan Anda untuk mengedit data kecamatan.
->>>>>>> ew-bawaslu
             </p>
 
             <div class="card">
                 <div class="card-header">
-<<<<<<< HEAD
                     <h4>Formulir Edit Kecamatan</h4>
-=======
-                    <h4>Formulir Kecamatan</h4>
->>>>>>> ew-bawaslu
                 </div>
                 <div class="card-body">
                     <form action="{{ route('kecamatan.update', $kecamatan->id) }}" method="POST">
