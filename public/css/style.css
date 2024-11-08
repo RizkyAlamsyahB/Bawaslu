@@ -3566,6 +3566,73 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
   background-color: #fff;
 }
 
+
+.login-page {
+  @media (max-width: 4096px) {
+    .sidebar-gone-hide {
+      display: none !important;
+    }
+    .sidebar-gone-show {
+      display: block !important;
+    }
+    .main-sidebar {
+      position: fixed !important;
+      margin-top: 0 !important;
+      z-index: 891;
+    }
+    body.layout-2 .main-wrapper,
+    body.layout-3 .main-wrapper {
+      width: 100%;
+      padding: 0;
+      display: block;
+    }
+    .main-content {
+      padding-left: 30px;
+      padding-right: 30px;
+      width: 100% !important;
+    }
+    .main-footer {
+      padding-left: 30px;
+    }
+    body.search-show {
+      overflow: hidden;
+    }
+    body.search-show .navbar {
+      z-index: 892;
+    }
+    body.sidebar-show {
+      overflow: hidden;
+    }
+    body.search-show:before, body.sidebar-show:before {
+      content: "";
+      position: fixed;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      opacity: 0;
+      z-index: 891;
+      -webkit-animation-name: fadeinbackdrop;
+      animation-name: fadeinbackdrop;
+      -webkit-animation-duration: 1s;
+      animation-duration: 1s;
+      -webkit-animation-fill-mode: forwards;
+      animation-fill-mode: forwards;
+    }
+    @-webkit-keyframes fadeinbackdrop {
+      to {
+        opacity: 0.6;
+      }
+    }
+    @keyframes fadeinbackdrop {
+      to {
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
 @media (max-width: 1024px) {
   .sidebar-gone-hide {
     display: none !important;
