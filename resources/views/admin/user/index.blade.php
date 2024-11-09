@@ -15,11 +15,7 @@
 
         <div class="section-body">
             <h2 class="section-title">Tabel Data Users</h2>
-            <p class="section-lead">
-                Halaman ini menampilkan data Users yang diambil dari server menggunakan server-side processing.
-                Anda dapat menambahkan, mengedit, atau menghapus data Users di sini.
-            </p>
-            <a href="{{ route('user.create') }}" class="btn btn-warning mb-3">Tambah User</a>
+            <a href="{{ route('user.create') }}" class="btn btn-primary mb-3">Tambah User</a>
 
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -30,38 +26,24 @@
                 </div>
             @endif
 
-            @if ($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ $errors->first() }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            @endif
-
             <div class="card">
-                <div class="card-header">
-                    <h4>Daftar Users</h4>
-                </div>
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="usersTable">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Nama</th>
-                                        <th>Phone</th>
-                                        <th>Username</th>
-                                        <th>Role</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Data akan dimuat melalui server-side processing menggunakan DataTables -->
-                                </tbody>
-                            </table>
-                        </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nama</th>
+                                    <th>Username</th>
+                                   
+                                    <th>Role</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data akan dimuat menggunakan DataTables -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -92,51 +74,81 @@
 @endsection
 
 @push('scripts')
-    <!-- DataTables JS -->
-    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 
-    <script>
-        $(document).ready(function() {
-            var table = $('#usersTable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: '{{ route('user.index') }}',
-                columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'phone',
-                        name: 'phone'
-                    },
-                    {
-                        data: 'username',
-                        name: 'username'
-                    },
-                    {
-                        data: 'role',
-                        name: 'role'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
+<script>
+    let table;
+    let deleteId = null;
+
+    $(document).ready(function() {
+        // Inisialisasi DataTables
+        table = $('#usersTable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('user.index') }}",
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                { data: 'name', name: 'name' },
+                { data: 'username', name: 'username' },
+                { data: 'role', name: 'role' },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                }
+            ]
+        });
+    });
+
+    // Function untuk menampilkan modal konfirmasi delete
+    function deleteUser(id) {
+        deleteId = id;
+        $('#deleteModal').modal('show');
+    }
+
+    // Handle delete confirmation
+    $('#confirmDelete').click(function() {
+        if (deleteId) {
+            $.ajax({
+                url: `/user/${deleteId}`,
+                type: 'DELETE',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Refresh DataTable
+                        table.ajax.reload();
+
+                        // Tampilkan pesan sukses
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
-                ],
-                pageLength: 10,
-                lengthMenu: [10, 25, 50, 100],
-                drawCallback: function() {
-                    $('#usersTable .dropdown-toggle').dropdown();
+                    $('#deleteModal').modal('hide');
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Terjadi kesalahan saat menghapus data!',
+                    });
+                    $('#deleteModal').modal('hide');
                 }
             });
-        });
-    </script>
+        }
+    });
+
+    // Reset deleteId ketika modal ditutup
+    $('#deleteModal').on('hidden.bs.modal', function() {
+        deleteId = null;
+    });
+</script>
 @endpush

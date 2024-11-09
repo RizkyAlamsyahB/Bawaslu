@@ -46,13 +46,15 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="tpsTable">
+                            <table class="table table-bordered" id="tpsTable">
                                 <thead>
                                     <tr>
                                         <th>#</th>
+                                        <th>Kode Kecamatan</th>
+                                        <th>Nama Kecamatan</th>
+                                        <th>Kode Kelurahan</th>
+                                        <th>Nama Kelurahan</th>
                                         <th>No TPS</th>
-                                        <th>Kelurahan</th>
-                                        <th>Kecamatan</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -88,73 +90,85 @@
             </div>
         </div>
     </div>
-
-
 @endsection
 
 @push('scripts')
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+
     <script>
+        let table;
+        let deleteId = null;
+
         $(document).ready(function() {
-            var table = $('#tpsTable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: '{{ route('tps.index') }}',
-                columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'no_tps',
-                        name: 'no_tps'
-                    },
-                    {
-                        data: 'kelurahan',
-                        name: 'kelurahan'
-                    },
-                    {
-                        data: 'kecamatan',
-                        name: 'kecamatan'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    }
-                ]
-            });
+    table = $('#tpsTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: '{{ route('tps.index') }}',
+        columns: [
+            { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+            { data: 'kode_kecamatan', name: 'kecamatan.kode_kecamatan' }, // Tambahkan kolom kode kecamatan
+            { data: 'nama_kecamatan', name: 'kecamatan.nama_kecamatan' },
+            { data: 'kode_kelurahan', name: 'kelurahan.kode_kelurahan' }, // Tambahkan kolom kode kelurahan
+            { data: 'nama_kelurahan', name: 'kelurahan.nama_kelurahan' },
+            { data: 'no_tps', name: 'no_tps' },
+            { data: 'action', name: 'action', orderable: false, searchable: false }
+        ],
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+        drawCallback: function() {
+            $('#tpsTable .dropdown-toggle').dropdown();
+        }
+    });
+});
 
-            var deleteUrl; // Menyimpan URL penghapusan sementara
+        // Function to show delete confirmation modal
+        function deleteTps(id) {
+            deleteId = id;
+            $('#deleteModal').modal('show');
+        }
 
-            // Event untuk tombol hapus untuk menampilkan modal
-            $('#tpsTable').on('click', '.btn-delete', function() {
-                deleteUrl = $(this).data('url'); // Mendapatkan URL hapus dari tombol
-                $('#deleteModal').modal('show'); // Tampilkan modal konfirmasi
-            });
-
-            // Event untuk tombol konfirmasi hapus di dalam modal
-            $('#confirmDelete').on('click', function() {
+        // Handle delete confirmation
+        $('#confirmDelete').click(function() {
+            if (deleteId) {
                 $.ajax({
-                    url: deleteUrl,
+                    url: `/tps/${deleteId}`,
                     type: 'DELETE',
                     data: {
-                        "_token": "{{ csrf_token() }}" // Token CSRF untuk keamanan
+                        "_token": "{{ csrf_token() }}"
                     },
                     success: function(response) {
-                        $('#deleteModal').modal('hide'); // Sembunyikan modal setelah sukses
-                        table.ajax.reload(); // Reload data tabel
-                        alert(response.success); // Notifikasi berhasil
+                        if (response.success) {
+                            // Refresh the DataTable
+                            table.ajax.reload();
+                            // Show success message
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                        $('#deleteModal').modal('hide');
                     },
                     error: function(xhr) {
-                        alert('Terjadi kesalahan saat menghapus data.');
+                        // Show error message
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Terjadi kesalahan saat menghapus data!',
+                        });
+                        $('#deleteModal').modal('hide');
                     }
                 });
-            });
+            }
+        });
+
+        // Reset deleteId when modal is closed
+        $('#deleteModal').on('hidden.bs.modal', function() {
+            deleteId = null;
         });
     </script>
 @endpush

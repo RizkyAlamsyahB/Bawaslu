@@ -39,9 +39,6 @@
                 </div>
             @endif
 
-
-
-
             <div class="card">
                 <div class="card-header">
                     <h4>Daftar Kecamatan</h4>
@@ -53,8 +50,8 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Nama Kecamatan</th>
                                         <th>Kode Kecamatan</th>
+                                        <th>Nama Kecamatan</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -98,8 +95,11 @@
     <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 
     <script>
+        let table;
+        let deleteId = null;
+
         $(document).ready(function() {
-            var table = $('#kecamatanTable').DataTable({
+            table = $('#kecamatanTable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: '{{ route('kecamatan.index') }}',
@@ -110,12 +110,12 @@
                         searchable: false
                     },
                     {
-                        data: 'nama_kecamatan',
-                        name: 'nama_kecamatan'
-                    },
-                    {
                         data: 'kode_kecamatan',
                         name: 'kode_kecamatan'
+                    },
+                    {
+                        data: 'nama_kecamatan',
+                        name: 'nama_kecamatan'
                     },
                     {
                         data: 'action',
@@ -131,6 +131,53 @@
                 }
             });
         });
+
+        // Function to show delete confirmation modal
+        function deleteKecamatan(id) {
+            deleteId = id;
+            $('#deleteModal').modal('show');
+        }
+
+        // Handle delete confirmation
+        $('#confirmDelete').click(function() {
+            if (deleteId) {
+                $.ajax({
+                    url: `/kecamatan/${deleteId}`,
+                    type: 'DELETE',
+                    data: {
+                        "_token": "{{ csrf_token() }}"
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Refresh the DataTable
+                            table.ajax.reload();
+                            // Show success message
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                        $('#deleteModal').modal('hide');
+                    },
+                    error: function(xhr) {
+                        // Show error message
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Terjadi kesalahan saat menghapus data!',
+                        });
+                        $('#deleteModal').modal('hide');
+                    }
+                });
+            }
+        });
+
+        // Reset deleteId when modal is closed
+        $('#deleteModal').on('hidden.bs.modal', function() {
+            deleteId = null;
+        });
     </script>
-  
 @endpush

@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kelurahan;
 use App\Models\Kecamatan;
+use App\Models\Kelurahan;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Cache;
@@ -17,34 +18,30 @@ class KelurahanController extends Controller
     }
 
     // Menampilkan data kelurahan dengan server-side processing
-    public function index()
+    public function index(Request $request)
     {
-        if (request()->ajax()) {
-            $data = Kelurahan::with('kecamatan')->get();
+        if ($request->ajax()) {
+            $kelurahans = Kelurahan::with('kecamatan');
 
-            return DataTables::of($data)
+            return DataTables::of($kelurahans)
                 ->addIndexColumn()
-                ->addColumn('kecamatan', function ($row) {
-                    return $row->kecamatan ? $row->kecamatan->nama_kecamatan : '-';
+                ->addColumn('kode_kecamatan', function($row) {
+                    return $row->kecamatan->kode_kecamatan;
                 })
-                ->addColumn('action', function ($row) {
-                    $editUrl = route('kelurahan.edit', $row->id);
-                    $deleteUrl = route('kelurahan.destroy', $row->id);
-
-                    return '
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton-' . $row->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Actions
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-' . $row->id . '">
-                                    <a href="' . $editUrl . '" class="dropdown-item">
-                                        <i class="bi bi-pencil"></i> Edit
-                                    </a>
-                                    <a href="javascript:void(0);" class="dropdown-item text-danger deleteButton" data-url="' . $deleteUrl . '">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </a>
-                                </div>
-                        </div>';
+                ->addColumn('nama_kecamatan', function($row) {
+                    return $row->kecamatan->nama_kecamatan;
+                })
+                ->addColumn('action', function($row){
+                    $actionBtn = '<div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Aksi
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="'.route('kelurahan.edit', $row->id).'">Edit</a>
+                            <a class="dropdown-item" href="#" onclick="deleteKelurahan(\''.$row->id.'\')">Hapus</a>
+                        </div>
+                    </div>';
+                    return $actionBtn;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -53,70 +50,106 @@ class KelurahanController extends Controller
         return view('admin.kelurahan.index');
     }
 
-    // Menampilkan form untuk membuat kelurahan
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
-        $kecamatans = Kecamatan::all();  // Ambil semua kecamatan
+        $kecamatans = Kecamatan::all();
         return view('admin.kelurahan.create', compact('kecamatans'));
     }
 
-  
-
-    // Menyimpan kelurahan baru
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
+            'kode_kelurahan' => 'required|string|unique:kelurahans,kode_kelurahan,NULL,id,kecamatan_id,' . $request->kecamatan_id,
             'nama_kelurahan' => 'required|string|max:255',
-            'kode_kelurahan' => 'required|max:10',  // Menghapus aturan unique
             'kecamatan_id' => 'required|exists:kecamatans,id',
         ]);
 
         try {
-            Kelurahan::create([
-                'nama_kelurahan' => $request->nama_kelurahan,
-                'kode_kelurahan' => $request->kode_kelurahan,
-                'kecamatan_id' => $request->kecamatan_id,
-            ]);
+            $kelurahan = new Kelurahan();
+            $kelurahan->id = Str::uuid();
+            $kelurahan->kode_kelurahan = $validated['kode_kelurahan'];
+            $kelurahan->nama_kelurahan = $validated['nama_kelurahan'];
+            $kelurahan->kecamatan_id = $validated['kecamatan_id'];
+            $kelurahan->save();
 
-            return redirect()->route('kelurahan.index')->with('success', 'Kelurahan berhasil ditambahkan!');
+            return redirect()
+                ->route('kelurahan.index')
+                ->with('success', 'Data kelurahan berhasil ditambahkan!');
         } catch (\Exception $e) {
-            return back()->withErrors('Terjadi kesalahan saat menyimpan data: ' . $e->getMessage());
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['error' => 'Terjadi kesalahan saat menyimpan data kelurahan.']);
         }
     }
 
-    // Menampilkan form untuk mengedit kelurahan
-    public function edit(Kelurahan $kelurahan)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
     {
-        $kecamatans = Kecamatan::all();  // Ambil semua kecamatan
+        $kelurahan = Kelurahan::findOrFail($id);
+        $kecamatans = Kecamatan::all();
         return view('admin.kelurahan.edit', compact('kelurahan', 'kecamatans'));
     }
 
-    // Memperbarui data kelurahan
-    public function update(Request $request, Kelurahan $kelurahan)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
     {
-        $request->validate([
+        $kelurahan = Kelurahan::findOrFail($id);
+
+        $validated = $request->validate([
+            'kode_kelurahan' => 'required|string|unique:kelurahans,kode_kelurahan,' . $kelurahan->id . ',id,kecamatan_id,' . $request->kecamatan_id,
             'nama_kelurahan' => 'required|string|max:255',
-            'kode_kelurahan' => 'required|max:10',  // Menghapus aturan unique
             'kecamatan_id' => 'required|exists:kecamatans,id',
         ]);
+        try {
+            $kelurahan->update($validated);
 
-        $kelurahan->update([
-            'nama_kelurahan' => $request->nama_kelurahan,
-            'kode_kelurahan' => $request->kode_kelurahan,
-            'kecamatan_id' => $request->kecamatan_id,
-        ]);
-
-        return redirect()->route('kelurahan.index')->with('success', 'Kelurahan berhasil diperbarui!');
+            return redirect()
+                ->route('kelurahan.index')
+                ->with('success', 'Data kelurahan berhasil diperbarui!');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['error' => 'Terjadi kesalahan saat memperbarui data kelurahan.']);
+        }
     }
 
-    // Menghapus kelurahan
-    public function destroy(Kelurahan $kelurahan)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
     {
-        $kelurahan->delete();
+        try {
+            $kelurahan = Kelurahan::findOrFail($id);
+            $kelurahan->delete();
 
-        // Clear cache after deletion
-        Cache::forget('kelurahan_data');
-
-        return redirect()->route('kelurahan.index')->with('success', 'Kelurahan berhasil dihapus!');
+            return response()->json([
+                'success' => true,
+                'message' => 'Data kelurahan berhasil dihapus!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menghapus data kelurahan.'
+            ], 500);
+        }
     }
+
+    // di KelurahankController
+public function getKelurahanByKecamatan($kecamatan_id)
+{
+    $kelurahans = Kelurahan::where('kecamatan_id', $kecamatan_id)->pluck('nama_kelurahan', 'id');
+    return response()->json($kelurahans);
+}
 }

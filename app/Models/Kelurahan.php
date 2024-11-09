@@ -45,4 +45,10 @@ class Kelurahan extends Model
     }
     public function users() { return $this->hasMany(User::class); }
 
+    public function getKodeUnikAttribute()
+{
+    return $this->kecamatan->kode_kecamatan . '.' . $this->kode_kelurahan;
+}
+
+
 }

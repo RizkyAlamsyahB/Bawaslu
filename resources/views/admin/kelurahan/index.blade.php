@@ -50,9 +50,10 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
+                                        <th>Kode Kecamatan</th>
+                                        <th>Nama Kecamatan</th>
                                         <th>Nama Kelurahan</th>
                                         <th>Kode Kelurahan</th>
-                                        <th>Kecamatan</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -96,24 +97,98 @@
     <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 
     <script>
-      $(document).ready(function() {
-        var table = $('#kelurahanTable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: '{{ route('kelurahan.index') }}',
-            columns: [
-                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'nama_kelurahan', name: 'nama_kelurahan' },
-                { data: 'kode_kelurahan', name: 'kode_kelurahan' },
-                { data: 'kecamatan', name: 'kecamatan' },
-                { data: 'action', name: 'action', orderable: false, searchable: false }
-            ],
-            pageLength: 10,
-            lengthMenu: [10, 25, 50, 100],
-            drawCallback: function() {
-                $('#kelurahanTable .dropdown-toggle').dropdown();
+        let table;
+        let deleteId = null;
+
+        $(document).ready(function() {
+            table = $('#kelurahanTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: '{{ route('kelurahan.index') }}',
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'kode_kecamatan',
+                        name: 'kecamatan.kode_kecamatan'
+                    },
+
+                    {
+                        data: 'nama_kecamatan',
+                        name: 'kecamatan.nama_kecamatan'
+                    },
+                    {
+                        data: 'nama_kelurahan',
+                        name: 'nama_kelurahan'
+                    },
+                    {
+                        data: 'kode_kelurahan',
+                        name: 'kode_kelurahan'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    }
+                ],
+                pageLength: 10,
+                lengthMenu: [10, 25, 50, 100],
+                drawCallback: function() {
+                    $('#kelurahanTable .dropdown-toggle').dropdown();
+                }
+            });
+        });
+
+        // Function to show delete confirmation modal
+        function deleteKelurahan(id) {
+            deleteId = id;
+            $('#deleteModal').modal('show');
+        }
+
+        // Handle delete confirmation
+        $('#confirmDelete').click(function() {
+            if (deleteId) {
+                $.ajax({
+                    url: `/kelurahan/${deleteId}`,
+                    type: 'DELETE',
+                    data: {
+                        "_token": "{{ csrf_token() }}"
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Refresh the DataTable
+                            table.ajax.reload();
+                            // Show success message
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                        $('#deleteModal').modal('hide');
+                    },
+                    error: function(xhr) {
+                        // Show error message
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Terjadi kesalahan saat menghapus data!',
+                        });
+                        $('#deleteModal').modal('hide');
+                    }
+                });
             }
         });
-      });
+
+        // Reset deleteId when modal is closed
+        $('#deleteModal').on('hidden.bs.modal', function() {
+            deleteId = null;
+        });
     </script>
 @endpush

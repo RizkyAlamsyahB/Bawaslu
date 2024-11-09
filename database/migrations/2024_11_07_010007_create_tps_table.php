@@ -12,19 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tps', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('no_tps');
-            $table->uuid('kelurahan_id')->nullable();
-            $table->uuid('kecamatan_id')->nullable();
+            $table->uuid('kelurahan_id');
+            $table->uuid('kecamatan_id');
 
-            // Tambahkan constraint unik pada kombinasi no_tps, kelurahan_id, dan kecamatan_id
-            $table->unique(['no_tps', 'kelurahan_id', 'kecamatan_id'], 'unique_no_tps_kelurahan_kecamatan');
-
-            $table->foreign('kelurahan_id')->references('id')->on('kelurahans')->onDelete('set null');
-            $table->foreign('kecamatan_id')->references('id')->on('kecamatans')->onDelete('set null');
+            // Foreign keys
+            $table->foreign('kelurahan_id')->references('id')->on('kelurahans')->onDelete('cascade');
+            $table->foreign('kecamatan_id')->references('id')->on('kecamatans')->onDelete('cascade');
 
             $table->timestamps();
+
+            // Add a unique constraint on the combination of no_tps, kelurahan_id, and kecamatan_id
+            $table->unique(['no_tps', 'kelurahan_id', 'kecamatan_id'], 'unique_no_tps_kelurahan_kecamatan');
         });
+
 
 
     }

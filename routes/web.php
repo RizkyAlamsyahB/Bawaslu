@@ -45,12 +45,13 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::resource('kelurahan', KelurahanController::class);
     Route::resource('tps', TpsController::class);
 
-    Route::get('/get-kelurahans/{kecamatan}', [UserController::class, 'getKelurahans']);
-    Route::get('/get-tps/{kelurahan}', [UserController::class, 'getTps']);
-
+    // di routes/web.php
+    Route::get('/kelurahan/by-kecamatan/{kecamatan_id}', [KelurahanController::class, 'getKelurahanByKecamatan'])->name('kelurahan.by-kecamatan');
 
     // Rute untuk mengambil TPS berdasarkan Kelurahan
     Route::get('get-tps-by-kelurahan/{kelurahan_id}', [TpsController::class, 'getTpsByKelurahan']);
+    // Rute untuk mengambil TPS berdasarkan KEcamatan
+    Route::get('/tps/by-kecamatan/{kecamatan_id}', [TpsController::class, 'getTpsByKecamatan'])->name('tps.by-kecamatan');
 
     Route::resource('user', UserController::class);
 });
