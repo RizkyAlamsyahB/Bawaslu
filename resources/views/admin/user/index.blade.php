@@ -15,7 +15,7 @@
 
         <div class="section-body">
             <h2 class="section-title">Tabel Data Users</h2>
-            <a href="{{ route('user.create') }}" class="btn btn-primary mb-3">Tambah User</a>
+            <a href="{{ route('user.create') }}" class="btn btn-warning mb-3">Tambah User</a>
 
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -35,7 +35,7 @@
                                     <th>#</th>
                                     <th>Nama</th>
                                     <th>Username</th>
-                                   
+
                                     <th>Role</th>
                                     <th>Aksi</th>
                                 </tr>

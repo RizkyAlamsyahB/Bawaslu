@@ -47,7 +47,7 @@
                     @enderror
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="submit" class="btn btn-warning">Simpan</button>
                     <a href="{{ route('tps.index') }}" class="btn btn-secondary">Kembali</a>
                 </div>
             </form>

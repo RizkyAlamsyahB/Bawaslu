@@ -58,7 +58,7 @@
                         </div>
 
                         <div class="form-group">
-                            <button type="submit" class="btn btn-primary">Update Kelurahan</button>
+                            <button type="submit" class="btn btn-warning">Update Kelurahan</button>
                             <a href="{{ route('kelurahan.index') }}" class="btn btn-secondary">Kembali</a>
                         </div>
                     </form>
