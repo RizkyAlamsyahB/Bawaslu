@@ -19,7 +19,12 @@
                 Halaman ini menampilkan data Kecamatan yang diambil dari server menggunakan server-side processing.
                 Anda dapat menambahkan, mengedit, atau menghapus data Kecamatan di sini.
             </p>
-            <a href="{{ route('kecamatan.create') }}" class="btn btn-warning mb-3">Tambah Kecamatan</a>
+            <div class="mb-3">
+                <a href="{{ route('kecamatan.create') }}" class="btn btn-warning">Tambah Kecamatan</a>
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#importModal">
+                    Import Kecamatan
+                </button>
+            </div>
 
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -39,10 +44,12 @@
                 </div>
             @endif
 
+
             <div class="card">
                 <div class="card-header">
                     <h4>Daftar Kecamatan</h4>
                 </div>
+
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
@@ -65,6 +72,50 @@
             </div>
         </div>
     </section>
+
+    <!-- Modal for import -->
+    <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">Import Data Kecamatan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{ route('kecamatan.import') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="btn btn-warning">
+                                Upload CSV <input type="file" class="d-none" name="csv_file" required accept=".csv">
+                            </label>
+
+                            <small class="form-text text-muted">
+                                Format CSV yang diharapkan:<br>
+                                <code>KODE KECAMATAN,NAMA KECAMATAN</code><br>
+                                Contoh isi:<br>
+                                <code>01,Karang Pilang</code><br>
+                                <code>02,Wonocolo</code><br><br>
+                                Catatan:<br>
+                                • Kode kecamatan akan otomatis diformat menjadi 2 digit<br>
+                                • Data yang sudah ada akan dilewati<br>
+                                • Maksimal ukuran file: 2MB
+                            </small>
+                        </div>
+                        @error('csv_file')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-warning">Import</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal for delete confirmation -->
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
@@ -131,53 +182,10 @@
                 }
             });
         });
-
-        // Function to show delete confirmation modal
-        function deleteKecamatan(id) {
-            deleteId = id;
-            $('#deleteModal').modal('show');
-        }
-
-        // Handle delete confirmation
-        $('#confirmDelete').click(function() {
-            if (deleteId) {
-                $.ajax({
-                    url: `/kecamatan/${deleteId}`,
-                    type: 'DELETE',
-                    data: {
-                        "_token": "{{ csrf_token() }}"
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            // Refresh the DataTable
-                            table.ajax.reload();
-                            // Show success message
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil!',
-                                text: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                        }
-                        $('#deleteModal').modal('hide');
-                    },
-                    error: function(xhr) {
-                        // Show error message
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Terjadi kesalahan saat menghapus data!',
-                        });
-                        $('#deleteModal').modal('hide');
-                    }
-                });
-            }
-        });
-
-        // Reset deleteId when modal is closed
-        $('#deleteModal').on('hidden.bs.modal', function() {
-            deleteId = null;
-        });
+        // Define CSRF token and session data for JavaScript
+        const csrfToken = "{{ csrf_token() }}";
+        const csvImportError = {{ $errors->has('csv_file') ? 'true' : 'false' }};
+        const importSuccessMessage = "{{ session('import_success') }}";
     </script>
+     <script src="{{ asset('js/kecamatan.js') }}"></script>
 @endpush

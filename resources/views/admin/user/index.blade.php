@@ -103,52 +103,7 @@
         });
     });
 
-    // Function untuk menampilkan modal konfirmasi delete
-    function deleteUser(id) {
-        deleteId = id;
-        $('#deleteModal').modal('show');
-    }
-
-    // Handle delete confirmation
-    $('#confirmDelete').click(function() {
-        if (deleteId) {
-            $.ajax({
-                url: `/user/${deleteId}`,
-                type: 'DELETE',
-                data: {
-                    "_token": "{{ csrf_token() }}"
-                },
-                success: function(response) {
-                    if (response.success) {
-                        // Refresh DataTable
-                        table.ajax.reload();
-
-                        // Tampilkan pesan sukses
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil!',
-                            text: response.message,
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                    }
-                    $('#deleteModal').modal('hide');
-                },
-                error: function() {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Terjadi kesalahan saat menghapus data!',
-                    });
-                    $('#deleteModal').modal('hide');
-                }
-            });
-        }
-    });
-
-    // Reset deleteId ketika modal ditutup
-    $('#deleteModal').on('hidden.bs.modal', function() {
-        deleteId = null;
-    });
+    const csrfToken = "{{ csrf_token() }}"; // CSRF token for AJAX requests
 </script>
+<script src="{{ asset('js/user.js') }}"></script>
 @endpush

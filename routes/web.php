@@ -29,23 +29,17 @@ Route::get('/dashboard', function () {
     ->middleware(['auth'])
     ->name('dashboard');
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/blank-page', [HomeController::class, 'blank'])->name('blank');
-});
-
-// Route::middleware('auth')->group(function () {
-//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-// });
-
 Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::resource('kecamatan', KecamatanController::class);
     Route::resource('kelurahan', KelurahanController::class);
     Route::resource('tps', TpsController::class);
 
-    // di routes/web.php
+    // Route khusus untuk import
+    Route::post('kelurahan/import', [KelurahanController::class, 'import'])->name('kelurahan.import');
+    Route::post('tps/import', [TpsController::class, 'import'])->name('tps.import');
+    Route::post('kecamatan/import', [KecamatanController::class, 'import'])->name('kecamatan.import');
+
     Route::get('/kelurahan/by-kecamatan/{kecamatan_id}', [KelurahanController::class, 'getKelurahanByKecamatan'])->name('kelurahan.by-kecamatan');
 
     // Rute untuk mengambil TPS berdasarkan Kelurahan
@@ -54,6 +48,9 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::get('/tps/by-kecamatan/{kecamatan_id}', [TpsController::class, 'getTpsByKecamatan'])->name('tps.by-kecamatan');
 
     Route::resource('user', UserController::class);
+    Route::get('/kelurahan/by-kecamatan/{kecamatan_id}', [UserController::class, 'getKelurahanByKecamatan']);
+    Route::get('/tps/by-kelurahan/{kelurahan_id}', [UserController::class, 'getTpsByKelurahan']);
+
 });
 
 Route::middleware(['auth', 'role:kecamatan'])->group(function () {

@@ -9,6 +9,11 @@
         </div>
 
         <div class="section-body">
+            <h2 class="section-title">Formulir Tambah User</h2>
+            <p class="section-lead">
+                Halaman ini memungkinkan Anda untuk menambahkan user baru ke dalam sistem.
+            </p>
+
             <div class="card">
                 <div class="card-body">
                     <form action="{{ route('user.store') }}" method="POST">
@@ -16,17 +21,14 @@
 
                         <div class="form-group">
                             <label for="name">Nama</label>
-                            <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required>
+                            <input type="text" class="form-control" id="name" name="name"
+                                value="{{ old('name') }}" required>
                         </div>
 
                         <div class="form-group">
                             <label for="phone">Telepon</label>
-                            <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone') }}" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
+                            <input type="text" class="form-control" id="phone" name="phone"
+                                   value="{{ old('phone') }}" required inputmode="numeric">
                         </div>
 
                         <div class="form-group">
@@ -34,7 +36,10 @@
                             <select class="form-control" id="kecamatan_id" name="kecamatan_id">
                                 <option value="">Pilih Kecamatan</option>
                                 @foreach ($kecamatans as $kecamatan)
-                                    <option value="{{ $kecamatan->id }}">{{ $kecamatan->nama_kecamatan }}</option>
+                                    <option value="{{ $kecamatan->id }}" data-kode="{{ $kecamatan->kode_kecamatan }}"
+                                        data-nama="{{ $kecamatan->nama_kecamatan }}">
+                                        {{ $kecamatan->nama_kecamatan }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -43,6 +48,11 @@
                             <label for="kelurahan_id">Kelurahan</label>
                             <select class="form-control" id="kelurahan_id" name="kelurahan_id">
                                 <option value="">Pilih Kelurahan</option>
+                                @foreach ($kelurahans as $kelurahan)
+                                    <option value="{{ $kelurahan->id }}" data-kode="{{ $kelurahan->kode_kelurahan }}">
+                                        {{ $kelurahan->nama_kelurahan }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 
@@ -50,77 +60,44 @@
                             <label for="tps_id">TPS</label>
                             <select class="form-control" id="tps_id" name="tps_id">
                                 <option value="">Pilih TPS</option>
+                                @foreach ($tps as $tp)
+                                    <option value="{{ $tp->id }}">{{ $tp->no_tps }}</option>
+                                @endforeach
                             </select>
                         </div>
 
-                        <button type="submit" class="btn btn-warning">Simpan</button>
-                        <a href="{{ route('user.index') }}" class="btn btn-secondary">Kembali</a>
+                        <!-- Username fields -->
+                        <div class="username-field-group">
+                            <div class="form-group" id="username_auto_group">
+                                <label for="username_preview">Username (Auto Generate)</label>
+                                <input type="text" class="form-control" id="username_preview" readonly>
+                                <small class="form-text text-muted">Username akan dibuat otomatis berdasarkan pilihan
+                                    wilayah</small>
+                            </div>
+
+                            <div class="form-group" id="username_manual_group" style="display: none;">
+                                <label for="username_manual">Username</label>
+                                <input type="text" class="form-control" id="username_manual" name="username_manual">
+                                <small class="form-text text-muted">Masukkan username yang diinginkan</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-warning">Simpan</button>
+                            <a href="{{ route('user.index') }}" class="btn btn-secondary">Kembali</a>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </section>
-
-    @push('scripts')
-    <script>
-        // Ketika Kecamatan dipilih
-        $('#kecamatan_id').change(function() {
-            let kecamatanId = $(this).val();  // Ambil ID Kecamatan yang dipilih
-
-            // Reset dropdown Kelurahan dan TPS
-            $('#kelurahan_id').html('<option value="">Pilih Kelurahan</option>');
-            $('#tps_id').html('<option value="">Pilih TPS</option>');
-
-            // Jika Kecamatan dipilih, ambil data Kelurahan yang terkait
-            if (kecamatanId) {
-                $.get('/kelurahan/by-kecamatan/' + kecamatanId, function(data) {
-                    // Iterasi data Kelurahan yang diterima dari server
-                    $.each(data, function(id, nama_kelurahan) {
-                        // Tambahkan option Kelurahan ke dropdown
-                        $('#kelurahan_id').append(new Option(nama_kelurahan, id));
-                    });
-                });
-            }
-        });
-
-        // Ketika Kelurahan dipilih
-        $('#kelurahan_id').change(function() {
-            let kelurahanId = $(this).val();  // Ambil ID Kelurahan yang dipilih
-
-            // Reset dropdown TPS
-            $('#tps_id').html('<option value="">Pilih TPS</option>');
-
-            // Jika Kelurahan dipilih, ambil data TPS yang terkait
-            if (kelurahanId) {
-                $.get('/get-tps-by-kelurahan/' + kelurahanId, function(data) {
-                    // Periksa format data dan tampilkan dengan benar
-                    $.each(data, function(index, tps) {
-                        // Pastikan tps adalah objek dengan atribut yang sesuai
-                        if (tps.no_tps && tps.id) {
-                            $('#tps_id').append(new Option(tps.no_tps, tps.id)); // Menambahkan no_tps dan id
-                        }
-                    });
-                });
-            }
-        });
-
-        // Jika Kecamatan dipilih terlebih dahulu, bisa mengambil TPS berdasarkan Kecamatan (untuk form tanpa Kelurahan)
-        $('#kecamatan_id').change(function() {
-            let kecamatanId = $(this).val();  // Ambil ID Kecamatan yang dipilih
-            if (kecamatanId) {
-                $.get('/tps/by-kecamatan/' + kecamatanId, function(data) {
-                    $('#tps_id').html('<option value="">Pilih TPS</option>');  // Reset TPS dropdown
-                    $.each(data, function(index, tps) {
-                        // Pastikan data TPS valid
-                        if (tps.no_tps && tps.id) {
-                            $('#tps_id').append(new Option(tps.no_tps, tps.id));  // Tambahkan TPS ke dropdown
-                        }
-                    });
-                });
-            }
-        });
-    </script>
-    @endpush
-
-
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('js/user.js') }}"></script>
+@endpush

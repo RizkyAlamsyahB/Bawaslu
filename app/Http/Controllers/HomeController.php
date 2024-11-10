@@ -26,8 +26,5 @@ class HomeController extends Controller
         return view('dashboard');
     }
 
-    public function blank()
-    {
-        return view('layouts.blank-page');
-    }
+    
 }

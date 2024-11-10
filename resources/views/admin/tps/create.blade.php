@@ -3,56 +3,95 @@
 @section('title', 'Tambah TPS')
 
 @section('content')
-    <!-- ... kode sebelumnya ... -->
-
-    <div class="card">
-        <div class="card-header">
-            <h4>Formulir TPS</h4>
+    <section class="section">
+        <div class="section-header">
+            <h1>Tambah Data TPS</h1>
         </div>
-        <div class="card-body">
-            <form action="{{ route('tps.store') }}" method="POST">
-                @csrf
 
-                <div class="form-group">
-                    <label for="kecamatan_id">Kecamatan</label>
-                    <select class="form-control" id="kecamatan_id" name="kecamatan_id" required>
-                        <option value="">Pilih Kecamatan</option>
-                        @foreach ($kecamatans as $kecamatan)
-                            <option value="{{ $kecamatan->id }}"
-                                {{ old('kecamatan_id') == $kecamatan->id ? 'selected' : '' }}>
-                                {{ $kecamatan->nama_kecamatan }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('kecamatan_id')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
+        <div class="section-body">
+            <h2 class="section-title">Formulir Tambah Data TPS</h2>
+            <p class="section-lead">
+                Halaman ini memungkinkan Anda untuk menambah data TPS yang baru.
+            </p>
 
-                <div class="form-group">
-                    <label for="kelurahan_id">Kelurahan</label>
-                    <select class="form-control" id="kelurahan_id" name="kelurahan_id" required>
-                        <option value="">Pilih Kelurahan</option>
-                    </select>
-                    @error('kelurahan_id')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+            <div class="card">
+                <div class="card-header">
+                    <h4>Formulir TPS</h4>
                 </div>
-                <div class="form-group">
-                    <label for="no_tps">Nomor TPS</label>
-                    <input type="text" class="form-control" id="no_tps" name="no_tps" value="{{ old('no_tps') }}"
-                        required>
-                    @error('no_tps')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+                <div class="card-body">
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @endif
+
+                    @if (session('warning'))
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            {{ session('warning') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ session('error') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('tps.store') }}" method="POST">
+                        @csrf
+
+                        <div class="form-group">
+                            <label for="kecamatan_id">Kecamatan</label>
+                            <select class="form-control" id="kecamatan_id" name="kecamatan_id" required>
+                                <option value="">Pilih Kecamatan</option>
+                                @foreach ($kecamatans as $kecamatan)
+                                    <option value="{{ $kecamatan->id }}"
+                                        {{ old('kecamatan_id') == $kecamatan->id ? 'selected' : '' }}>
+                                        {{ $kecamatan->nama_kecamatan }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('kecamatan_id')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="kelurahan_id">Kelurahan</label>
+                            <select class="form-control" id="kelurahan_id" name="kelurahan_id" required>
+                                <option value="">Pilih Kelurahan</option>
+                            </select>
+                            @error('kelurahan_id')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="no_tps">Nomor TPS</label>
+                            <input type="text" class="form-control" id="no_tps" name="no_tps" value="{{ old('no_tps') }}" required inputmode="numeric">
+                            @error('no_tps')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-warning">Simpan</button>
+                            <a href="{{ route('tps.index') }}" class="btn btn-secondary">Kembali</a>
+                        </div>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-warning">Simpan</button>
-                    <a href="{{ route('tps.index') }}" class="btn btn-secondary">Kembali</a>
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
+    </section>
 @endsection
 
 @push('scripts')
@@ -66,12 +105,14 @@
                     $.ajax({
                         url: `/kelurahan/by-kecamatan/${kecamatanId}`,
                         type: 'GET',
-                        success: function(data) {
-                            $.each(data, function(id, nama_kelurahan) {
-                                let selected = (id == selectedKelurahanId) ? 'selected' : '';
+                        success: function(response) {
+                            // Menggunakan forEach untuk array objek
+                            response.forEach(function(kelurahan) {
+                                let selected = (kelurahan.id == selectedKelurahanId) ?
+                                    'selected' : '';
                                 $('#kelurahan_id').append(
-                                    `<option value="${id}" ${selected}>${nama_kelurahan}</option>`
-                                    );
+                                    `<option value="${kelurahan.id}" ${selected}>${kelurahan.nama_kelurahan}</option>`
+                                );
                             });
                         }
                     });
@@ -84,7 +125,7 @@
                 loadKelurahan(kecamatanId);
             });
 
-            // Load kelurahan saat halaman pertama kali dimuat (untuk edit page)
+            // Load kelurahan saat halaman pertama kali dimuat (untuk form tambah)
             let initialKecamatanId = $('#kecamatan_id').val();
             let initialKelurahanId = '{{ old('kelurahan_id') }}';
             if (initialKecamatanId) {

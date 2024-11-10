@@ -31,7 +31,7 @@
                         </div>
                         <div class="form-group">
                             <label for="kode_kecamatan">Kode Kecamatan</label>
-                            <input type="text" class="form-control" id="kode_kecamatan" name="kode_kecamatan" value="{{ old('kode_kecamatan', $kecamatan->kode_kecamatan) }}" required>
+                            <input type="text" class="form-control" id="kode_kecamatan" name="kode_kecamatan" value="{{ old('kode_kecamatan', $kecamatan->kode_kecamatan) }}" required inputmode="numeric">
                             @error('kode_kecamatan')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror

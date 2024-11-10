@@ -32,13 +32,6 @@
                     </ul>
                 </li>
             @endif
-
-
-                <li class="menu-header">Starter</li>
-                <li class="{{ Request::is('blank-page') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ url('blank-page') }}"><i class="far fa-square"></i> <span>Blank
-                            Page</span></a>
-                </li>
             </ul>
         </aside>
     </div>

@@ -48,13 +48,11 @@
                         <div class="form-group">
                             <label for="kode_kelurahan">Kode Kelurahan</label>
                             <input type="text" class="form-control" id="kode_kelurahan" name="kode_kelurahan"
-                                   value="{{ old('kode_kelurahan', $kelurahan->kode_kelurahan ?? '') }}" required>
+                                   value="{{ old('kode_kelurahan', $kelurahan->kode_kelurahan ?? '') }}" required inputmode="numeric">
                             @error('kode_kelurahan')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
-
-
 
                         <div class="form-group text-left">
                             <button type="submit" class="btn btn-warning">Simpan</button>

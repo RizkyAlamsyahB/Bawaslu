@@ -3,7 +3,6 @@
 @section('title', 'Data Kelurahan')
 
 @push('style')
-    <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
 @endpush
 
@@ -17,9 +16,14 @@
             <h2 class="section-title">Tabel Data Kelurahan</h2>
             <p class="section-lead">
                 Halaman ini menampilkan data Kelurahan yang diambil dari server menggunakan server-side processing.
-                Anda dapat menambahkan, mengedit, atau menghapus data Kelurahan di sini.
             </p>
-            <a href="{{ route('kelurahan.create') }}" class="btn btn-warning mb-3">Tambah Kelurahan</a>
+
+            <div class="mb-3">
+                <a href="{{ route('kelurahan.create') }}" class="btn btn-warning">Tambah Kelurahan</a>
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#importModal">
+                    Import Kelurahan
+                </button>
+            </div>
 
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -30,9 +34,9 @@
                 </div>
             @endif
 
-            @if ($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ $errors->first() }}
+            @if (session('warning'))
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ session('warning') }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -43,32 +47,71 @@
                 <div class="card-header">
                     <h4>Daftar Kelurahan</h4>
                 </div>
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="kelurahanTable">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Kode Kecamatan</th>
-                                        <th>Nama Kecamatan</th>
-                                        <th>Nama Kelurahan</th>
-                                        <th>Kode Kelurahan</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Data akan dimuat melalui server-side processing menggunakan DataTables -->
-                                </tbody>
-                            </table>
-                        </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="kelurahanTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Kode Kecamatan</th>
+                                    <th>Kode Kelurahan</th>
+                                    <th>Nama Kelurahan</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Modal for delete confirmation -->
+    <!-- Modal Import -->
+    <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">Import Data Kelurahan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{ route('kelurahan.import') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="btn btn-warning">
+                                Upload CSV <input type="file" class="d-none" name="csv_file" required accept=".csv">
+                            </label>
+                            <small class="form-text text-muted">
+                                Format CSV yang diharapkan:<br>
+                                <code>KODE KECAMATAN,KODE KELURAHAN,KELURAHAN</code><br>
+                                Contoh isi:<br>
+                                <code>01,1001,Karang Pilang</code><br>
+                                <code>01,1002,Kebraon</code><br><br>
+                                Catatan:<br>
+                                • Kode kecamatan harus sudah terdaftar di sistem<br>
+                                • Data yang sudah ada akan dilewati<br>
+                                • Maksimal ukuran file: 2MB
+                            </small>
+                        </div>
+                        @error('csv_file')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-warning">Import</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Delete -->
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -92,7 +135,6 @@
 @endsection
 
 @push('scripts')
-    <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 
@@ -113,20 +155,15 @@
                     },
                     {
                         data: 'kode_kecamatan',
-                        name: 'kecamatan.kode_kecamatan'
-                    },
-
-                    {
-                        data: 'nama_kecamatan',
-                        name: 'kecamatan.nama_kecamatan'
-                    },
-                    {
-                        data: 'nama_kelurahan',
-                        name: 'nama_kelurahan'
+                        name: 'kode_kecamatan',
                     },
                     {
                         data: 'kode_kelurahan',
                         name: 'kode_kelurahan'
+                    },
+                    {
+                        data: 'nama_kelurahan',
+                        name: 'nama_kelurahan'
                     },
                     {
                         data: 'action',
@@ -143,52 +180,9 @@
             });
         });
 
-        // Function to show delete confirmation modal
-        function deleteKelurahan(id) {
-            deleteId = id;
-            $('#deleteModal').modal('show');
-        }
-
-        // Handle delete confirmation
-        $('#confirmDelete').click(function() {
-            if (deleteId) {
-                $.ajax({
-                    url: `/kelurahan/${deleteId}`,
-                    type: 'DELETE',
-                    data: {
-                        "_token": "{{ csrf_token() }}"
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            // Refresh the DataTable
-                            table.ajax.reload();
-                            // Show success message
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil!',
-                                text: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                        }
-                        $('#deleteModal').modal('hide');
-                    },
-                    error: function(xhr) {
-                        // Show error message
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Terjadi kesalahan saat menghapus data!',
-                        });
-                        $('#deleteModal').modal('hide');
-                    }
-                });
-            }
-        });
-
-        // Reset deleteId when modal is closed
-        $('#deleteModal').on('hidden.bs.modal', function() {
-            deleteId = null;
-        });
+        const csrfToken = "{{ csrf_token() }}"; // Pass CSRF token to JavaScript
+        const csvImportError = @json($errors->has('csv_file'));
+        const importSuccessMessage = @json(session('import_success'));
     </script>
+    <script src="{{ asset('js/kelurahan.js') }}"></script>
 @endpush
