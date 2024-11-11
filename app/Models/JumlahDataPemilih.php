@@ -16,6 +16,8 @@ class JumlahDataPemilih extends Model
 
     protected $fillable = ['tipe_pemilihan', 'laki_laki', 'perempuan', 'jumlah'];
 
+
+    protected $table = 'jumlah_data_pemilih';
     protected static function booted()
     {
         static::creating(function ($user) {

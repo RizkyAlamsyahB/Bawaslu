@@ -24,13 +24,20 @@ use App\Models\PenggunaHakPilihDisabilitas;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+ 
 
     protected $keyType = 'string'; // Gunakan string untuk UUID
     public $incrementing = false; // Nonaktifkan auto-increment karena UUID tidak auto-increment
     protected $fillable = ['name', 'phone', 'password', 'username', 'role', 'kecamatan_id', 'kelurahan_id', 'tps_id'];
+
+    public function hasRole($role)
+    {
+        return $this->role === $role;
+    }
     protected static function booted()
     {
         static::creating(function ($user) {

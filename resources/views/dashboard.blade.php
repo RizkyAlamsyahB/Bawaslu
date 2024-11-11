@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="row justify-content-center">
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card">
                 <div class="card-body text-center">
                     <!-- User Profile Image -->

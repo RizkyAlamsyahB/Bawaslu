@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KecamatanController;
 use App\Http\Controllers\KelurahanController;
+use App\Http\Controllers\JumlahDataPemilihController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,9 +62,10 @@ Route::middleware(['auth', 'role:kelurahan'])->group(function () {
     // Routes untuk kelurahan
 });
 
-Route::middleware(['auth', 'role:tps'])->group(function () {
-    // Routes untuk tps
+Route::middleware(['auth', 'role:tps,super_admin'])->group(function () {
+    Route::resource('jumlah_data_pemilih', JumlahDataPemilihController::class);
 });
+
 
 Route::middleware(['auth', 'role:kota'])->group(function () {
     // Routes untuk kota
