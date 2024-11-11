@@ -23,11 +23,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        return view('dashboard');
     }
 
-    public function blank()
-    {
-        return view('layouts.blank-page');
-    }
+    
 }

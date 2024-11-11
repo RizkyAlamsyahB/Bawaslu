@@ -28,16 +28,14 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $keyType = 'string';  // Gunakan string untuk UUID
-    public $incrementing = false;  // Nonaktifkan auto-increment karena UUID tidak auto-increment
-
+    protected $keyType = 'string'; // Gunakan string untuk UUID
+    public $incrementing = false; // Nonaktifkan auto-increment karena UUID tidak auto-increment
     protected $fillable = ['name', 'phone', 'password', 'username', 'role', 'kecamatan_id', 'kelurahan_id', 'tps_id'];
-
     protected static function booted()
     {
         static::creating(function ($user) {
             if (empty($user->id)) {
-                $user->id = (string) Str::uuid();  // Generate UUID saat pembuatan user
+                $user->id = (string) Str::uuid(); // Generate UUID saat pembuatan user
             }
         });
     }
@@ -53,10 +51,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
     /**
      * The attributes that should be cast.
@@ -81,63 +76,4 @@ class User extends Authenticatable
         return $this->belongsTo(Tps::class, 'tps_id');
     }
 
-    public function dataSuaraSah()
-    {
-        return $this->hasMany(DataSuaraSah::class, 'user_id');
-    }
-
-    public function jumlahDataPemilih()
-    {
-        return $this->hasMany(JumlahDataPemilih::class, 'user_id');
-    }
-
-    public function jumlahPemilihDisabilitas()
-    {
-        return $this->hasMany(JumlahPemilihDisabilitas::class, 'user_id');
-    }
-
-    public function jumlahPemilihDpk()
-    {
-        return $this->hasMany(JumlahPemilihDpk::class, 'user_id');
-    }
-
-    public function jumlahPemilihDpt()
-    {
-        return $this->hasMany(JumlahPemilihDpt::class, 'user_id');
-    }
-
-    public function jumlahPemilihDptb()
-    {
-        return $this->hasMany(JumlahPemilihDptb::class, 'user_id');
-    }
-
-    public function jumlahPenggunaHakPilih()
-    {
-        return $this->hasMany(JumlahPenggunaHakPilih::class, 'user_id');
-    }
-
-    public function penggunaanSuratSuara()
-    {
-        return $this->hasMany(PenggunaanSuratSuara::class, 'user_id');
-    }
-
-    public function penggunaHakPilihDisabilitas()
-    {
-        return $this->hasMany(PenggunaHakPilihDisabilitas::class, 'user_id');
-    }
-
-    public function penggunaHakPilihDpk()
-    {
-        return $this->hasMany(PenggunaHakPilihDpk::class, 'user_id');
-    }
-
-    public function penggunaHakPilihDpt()
-    {
-        return $this->hasMany(PenggunaHakPilihDpt::class, 'user_id');
-    }
-
-    public function penggunaHakPilihDptb()
-    {
-        return $this->hasMany(PenggunaHakPilihDptb::class, 'user_id');
-    }
 }

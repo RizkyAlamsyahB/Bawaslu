@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pengguna_hak_pilih_dptb', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->enum('tipe_pemilihan', ['gubernur', 'walikota']);
             $table->integer('laki_laki');
             $table->integer('perempuan');
             $table->integer('jumlah');

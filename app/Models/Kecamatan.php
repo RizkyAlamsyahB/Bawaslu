@@ -36,5 +36,12 @@ class Kecamatan extends Model
         return $this->hasMany(Kelurahan::class);
     }
 
+    // Relation with Tps
+    public function tps()
+    {
+        return $this->hasMany(Tps::class, 'kecamatan_id');  // Relasi dengan banyak TPS
+    }
+
+    public function users() { return $this->hasMany(User::class); }
 
 }

@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tps;
+use League\Csv\Reader;
 use App\Models\Kecamatan;
+use App\Models\Kelurahan;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
 class KecamatanController extends Controller
@@ -15,36 +21,98 @@ class KecamatanController extends Controller
         $this->middleware(['auth', 'role:super_admin']);
     }
 
-    // Menampilkan data kecamatan dengan server-side processing
-    public function index()
+    public function import(Request $request)
     {
-        if (request()->ajax()) {
-            // Menggunakan query builder agar lebih fleksibel
-            $data = Kecamatan::all();
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt|max:2048',
+        ]);
 
-            return DataTables::of($data)
+        DB::beginTransaction();
+        try {
+            $file = $request->file('csv_file');
+            $csv = Reader::createFromPath($file->getPathname(), 'r');
+            $csv->setHeaderOffset(0);
+
+            $records = $csv->getRecords();
+            $processedKecamatans = [];
+            $successCount = 0;
+            $skipCount = 0;
+
+            foreach ($records as $record) {
+                $kodeKecamatan = $record['KODE KECAMATAN'];
+                $namaKecamatan = $record['NAMA KECAMATAN'];
+
+                // Skip jika kolom kosong
+                if (empty($kodeKecamatan) || empty($namaKecamatan)) {
+                    $skipCount++;
+                    continue;
+                }
+
+                // Format kode kecamatan menjadi 2 digit
+                $kodeKecamatan = str_pad($kodeKecamatan, 2, '0', STR_PAD_LEFT);
+
+                // Skip jika bukan kode kecamatan valid atau sudah diproses
+                if (!$this->isValidKecamatanCode($kodeKecamatan) || isset($processedKecamatans[$kodeKecamatan])) {
+                    $skipCount++;
+                    continue;
+                }
+
+                $kecamatan = Kecamatan::firstOrNew(['kode_kecamatan' => $kodeKecamatan]);
+                if (!$kecamatan->exists) {
+                    $kecamatan->id = Str::uuid();
+                    $kecamatan->kode_kecamatan = $kodeKecamatan;
+                    $kecamatan->nama_kecamatan = $namaKecamatan;
+                    $kecamatan->save();
+                    $successCount++;
+                } else {
+                    $skipCount++;
+                }
+
+                $processedKecamatans[$kodeKecamatan] = true;
+            }
+
+            DB::commit();
+
+            $message = sprintf('Import kecamatan berhasil! %d data baru ditambahkan, %d data dilewati.', $successCount, $skipCount);
+
+            return redirect()->route('kecamatan.index')->with('success', $message);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()
+                ->back()
+                ->withErrors(['error' => 'Gagal import data: ' . $e->getMessage()]);
+        }
+    }
+
+    private function isValidKecamatanCode($code)
+    {
+        return strlen($code) == 2 && is_numeric($code);
+    }
+    // Menampilkan data kecamatan dengan server-side processing
+
+    public function index(Request $request)
+    {
+        if ($request->ajax()) {
+            $kecamatans = Kecamatan::query();
+
+            return DataTables::of($kecamatans)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $editUrl = route('kecamatan.edit', $row->id);
-                    $deleteUrl = route('kecamatan.destroy', $row->id);
-
-                    return '
-                        <div class="dropdown dropdown">
-                            <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton-' . $row->id . '" data-bs-toggle="dropdown" aria-expanded="false">
-                                Actions
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton-' . $row->id . '">
-                                <li><a href="' . $editUrl . '" class="dropdown-item">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a></li>
-                                <li><form action="' . $deleteUrl . '" method="POST" onsubmit="return confirm(\'Apakah Anda yakin ingin menghapus kecamatan ini?\');">
-                                    ' . csrf_field() . method_field('DELETE') . '
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </form></li>
-                            </ul>
-                        </div>';
+                    $actionBtn =
+                        '<div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Aksi
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="' .
+                        route('kecamatan.edit', $row->id) .
+                        '">Edit</a>
+                            <a class="dropdown-item" href="#" onclick="deleteKecamatan(\'' .
+                        $row->id .
+                        '\')">Hapus</a>
+                        </div>
+                    </div>';
+                    return $actionBtn;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -53,65 +121,99 @@ class KecamatanController extends Controller
         return view('admin.kecamatan.index');
     }
 
-
-
-    // Menampilkan form untuk membuat kecamatan
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
         return view('admin.kecamatan.create');
     }
 
-    // Menyimpan kecamatan baru
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'nama_kecamatan' => 'required|string|max:255',
-            'kode_kecamatan' => 'required|unique:kecamatans,kode_kecamatan|max:10',
+        $validated = $request->validate([
+            'kode_kecamatan' => 'required|numeric|max:999|unique:kecamatans,kode_kecamatan',
+            'nama_kecamatan' => 'required|string|max:50',
         ]);
 
         try {
-            Kecamatan::create([
-                'nama_kecamatan' => $request->nama_kecamatan,
-                'kode_kecamatan' => $request->kode_kecamatan,
-            ]);
+            $kecamatan = new Kecamatan();
+            $kecamatan->id = Str::uuid();
+            $kecamatan->kode_kecamatan = $validated['kode_kecamatan'];
+            $kecamatan->nama_kecamatan = $validated['nama_kecamatan'];
+            $kecamatan->save();
 
-            return redirect()->route('kecamatan.index')->with('success', 'Kecamatan berhasil ditambahkan!');
+            return redirect()->route('kecamatan.index')->with('success', 'Data kecamatan berhasil ditambahkan!');
         } catch (\Exception $e) {
-            return back()->withErrors('Terjadi kesalahan saat menyimpan data: ' . $e->getMessage());
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['error' => 'Terjadi kesalahan saat menyimpan data kecamatan.']);
         }
     }
 
-
-    // Menampilkan form untuk mengedit kecamatan
-    public function edit(Kecamatan $kecamatan)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
     {
-        return view('admin.pages.kecamatan.edit', compact('kecamatan'));
+        $kecamatan = Kecamatan::findOrFail($id);
+        return view('admin.kecamatan.edit', compact('kecamatan'));
     }
 
-    // Memperbarui data kecamatan
-    public function update(Request $request, Kecamatan $kecamatan)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
     {
-        $request->validate([
+        $kecamatan = Kecamatan::findOrFail($id);
+
+        $validated = $request->validate([
+            'kode_kecamatan' => [
+                'required',
+                'numeric',
+                'max:999', // Ensures a maximum of 3 numeric digits
+                Rule::unique('kecamatans')->ignore($kecamatan->id),
+            ],
             'nama_kecamatan' => 'required|string|max:255',
-            'kode_kecamatan' => 'required|unique:kecamatans,kode_kecamatan,' . $kecamatan->id . '|max:10',
         ]);
 
-        $kecamatan->update([
-            'nama_kecamatan' => $request->nama_kecamatan,
-            'kode_kecamatan' => $request->kode_kecamatan,
-        ]);
+        try {
+            $kecamatan->update($validated);
 
-        return redirect()->route('kecamatan.index')->with('success', 'Kecamatan berhasil diperbarui!');
+            return redirect()->route('kecamatan.index')->with('success', 'Data kecamatan berhasil diperbarui!');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['error' => 'Terjadi kesalahan saat memperbarui data kecamatan.']);
+        }
     }
 
-    // Menghapus kecamatan
-    public function destroy(Kecamatan $kecamatan)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
     {
-        $kecamatan->delete();
+        try {
+            $kecamatan = Kecamatan::findOrFail($id);
+            $kecamatan->delete();
 
-        // Clear cache after deletion
-        Cache::forget('kecamatan_data');
-
-        return redirect()->route('kecamatan.index')->with('success', 'Kecamatan berhasil dihapus!');
+            return response()->json([
+                'success' => true,
+                'message' => 'Data kecamatan berhasil dihapus!',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan saat menghapus data kecamatan.',
+                ],
+                500,
+            );
+        }
     }
 }

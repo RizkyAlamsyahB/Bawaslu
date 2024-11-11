@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +14,7 @@ class DataSuaraSah extends Model
     protected $keyType = 'string';  // Gunakan string untuk UUID
     public $incrementing = false;  // Nonaktifkan auto-increment karena UUID tidak auto-increment
 
-    protected $fillable = ['nama_pasangan_calon', 'jumlah_suara_sah', 'jumlah_suara_tidak_sah', 'total_suara_sah_dan_tidak_sah'];
+    protected $fillable = ['tipe_pemilihan', 'nama_pasangan_calon', 'jumlah_suara_sah', 'jumlah_suara_tidak_sah', 'total_suara_sah_dan_tidak_sah'];
 
     protected static function booted()
     {
@@ -22,5 +23,10 @@ class DataSuaraSah extends Model
                 $user->id = (string) Str::uuid();  // Generate UUID saat pembuatan user
             }
         });
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

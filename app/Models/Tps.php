@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
+use App\Models\Kecamatan;
 use App\Models\Kelurahan;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
@@ -27,7 +28,7 @@ class Tps extends Model
     }
 
     // Mass assignment protection
-    protected $fillable = ['no_tps', 'kelurahan_id'];
+    protected $fillable = ['no_tps', 'kelurahan_id', 'kecamatan_id'];  // Tambahkan kecamatan_id ke fillable
 
     // Relation with Kelurahan
     public function kelurahan()
@@ -35,5 +36,11 @@ class Tps extends Model
         return $this->belongsTo(Kelurahan::class, 'kelurahan_id');
     }
 
+    // Relation with Kecamatan
+    public function kecamatan()
+    {
+        return $this->belongsTo(Kecamatan::class, 'kecamatan_id');  // Relasi ke Kecamatan
+    }
 
+    public function users() { return $this->hasMany(User::class); }
 }

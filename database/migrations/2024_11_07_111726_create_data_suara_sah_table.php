@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('data_suara_sah', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->enum('tipe_pemilihan', ['gubernur', 'walikota']);
             $table->string('nama_pasangan_calon');
             $table->integer('jumlah_suara_sah');
             $table->integer('jumlah_suara_tidak_sah')->nullable();

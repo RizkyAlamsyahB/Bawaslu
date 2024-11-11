@@ -12,12 +12,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tps', function (Blueprint $table) {
-            $table->uuid('id')->primary();  // Gunakan UUID untuk ID utama
-            $table->string('no_tps')->unique();
-            $table->uuid('kelurahan_id'); // Foreign key dengan UUID
-            $table->foreign('kelurahan_id')->references('id')->on('kelurahans')->onDelete('cascade'); // Foreign key constraint
+            $table->uuid('id')->primary();
+            $table->string('no_tps');
+            $table->uuid('kelurahan_id');
+            $table->uuid('kecamatan_id');
+
+            // Foreign keys
+            $table->foreign('kelurahan_id')->references('id')->on('kelurahans')->onDelete('cascade');
+            $table->foreign('kecamatan_id')->references('id')->on('kecamatans')->onDelete('cascade');
+
             $table->timestamps();
+
+            // Add a unique constraint on the combination of no_tps, kelurahan_id, and kecamatan_id
+            $table->unique(['no_tps', 'kelurahan_id', 'kecamatan_id'], 'unique_no_tps_kelurahan_kecamatan');
         });
+
+
+
     }
 
     /**

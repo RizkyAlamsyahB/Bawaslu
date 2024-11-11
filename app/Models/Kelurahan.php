@@ -43,6 +43,12 @@ class Kelurahan extends Model
     {
         return $this->hasMany(Tps::class, 'kelurahan_id');
     }
+    public function users() { return $this->hasMany(User::class); }
+
+    public function getKodeUnikAttribute()
+{
+    return $this->kecamatan->kode_kecamatan . '.' . $this->kode_kelurahan;
+}
 
 
 }

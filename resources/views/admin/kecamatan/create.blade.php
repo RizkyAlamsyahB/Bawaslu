@@ -18,46 +18,60 @@
                 <div class="card-header">
                     <h4>Formulir Kecamatan</h4>
                 </div>
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                @endif
+
+                @if (session('warning'))
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        {{ session('warning') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                @endif
                 <div class="card-body">
                     <form action="{{ route('kecamatan.store') }}" method="POST">
                         @csrf
                         <div class="form-group">
                             <label for="nama_kecamatan">Nama Kecamatan</label>
-                            <input type="text" class="form-control" id="nama_kecamatan" name="nama_kecamatan" value="{{ old('nama_kecamatan') }}" required>
+                            <input type="text" class="form-control" id="nama_kecamatan" name="nama_kecamatan"
+                                value="{{ old('nama_kecamatan') }}" required>
                             @error('nama_kecamatan')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-group">
                             <label for="kode_kecamatan">Kode Kecamatan</label>
-                            <input type="text" class="form-control" id="kode_kecamatan" name="kode_kecamatan" value="{{ old('kode_kecamatan') }}" required>
+                            <input type="text" class="form-control" id="kode_kecamatan" name="kode_kecamatan"
+                                value="{{ old('kode_kecamatan') }}" required inputmode="numeric">
                             @error('kode_kecamatan')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="form-group text-left">
-                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <button type="submit" class="btn btn-warning">Simpan</button>
                             <a href="{{ route('kecamatan.index') }}" class="btn btn-secondary">Kembali</a>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                Test Dropdown
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-        </div>
- <!-- jQuery and Bootstrap JS -->
- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-...">
- </script>
 
     </section>
 @endsection
