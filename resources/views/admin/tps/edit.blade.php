@@ -22,32 +22,58 @@
                 <div class="card-header">
                     <h4>Formulir Edit TPS</h4>
                 </div>
-                <div class="card-body">
-                    @if (session('success'))
+                @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    @endif
+                @endif
 
-                    @if (session('warning'))
+                @if (session('warning'))
                     <div class="alert alert-warning alert-dismissible fade show" role="alert">
                         {{ session('warning') }}
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    @endif
+                @endif
 
-                    @if (session('error'))
+                @if (session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         {{ session('error') }}
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
+                @endif
+                <div class="card-body">
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @endif
+
+                    @if (session('warning'))
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            {{ session('warning') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ session('error') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                     @endif
 
                     <form action="{{ route('tps.update', $tps->id) }}" method="POST">
@@ -83,7 +109,7 @@
                         <div class="form-group">
                             <label for="no_tps">Nomor TPS</label>
                             <input type="text" class="form-control" id="no_tps" name="no_tps"
-                                   value="{{ old('no_tps', $tps->no_tps) }}" required inputmode="numeric">
+                                value="{{ old('no_tps', $tps->no_tps) }}" required inputmode="numeric">
                             @error('no_tps')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -113,7 +139,8 @@
                         type: 'GET',
                         success: function(response) {
                             response.forEach(function(kelurahan) {
-                                let selected = (kelurahan.id == selectedKelurahanId) ? 'selected' : '';
+                                let selected = (kelurahan.id == selectedKelurahanId) ?
+                                    'selected' : '';
                                 $('#kelurahan_id').append(
                                     `<option value="${kelurahan.id}" ${selected}>${kelurahan.nama_kelurahan}</option>`
                                 );

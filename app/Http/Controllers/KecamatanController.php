@@ -135,7 +135,7 @@ class KecamatanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'kode_kecamatan' => 'required|numeric|digits:3|unique:kecamatans,kode_kecamatan',
+            'kode_kecamatan' => 'required|numeric|max:999|unique:kecamatans,kode_kecamatan',
             'nama_kecamatan' => 'required|string|max:50',
         ]);
 
@@ -174,7 +174,8 @@ class KecamatanController extends Controller
         $validated = $request->validate([
             'kode_kecamatan' => [
                 'required',
-                'digits:3', // Ensures exactly 3 numeric digits
+                'numeric',
+                'max:999', // Ensures a maximum of 3 numeric digits
                 Rule::unique('kecamatans')->ignore($kecamatan->id),
             ],
             'nama_kecamatan' => 'required|string|max:255',

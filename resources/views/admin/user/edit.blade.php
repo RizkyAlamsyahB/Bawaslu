@@ -9,7 +9,39 @@
         </div>
 
         <div class="section-body">
+            <h2 class="section-title">Formulir Edit User</h2>
+            <p class="section-lead">
+                Halaman ini memungkinkan Anda untuk mengubah data user yang ada dalam sistem.
+            </p>
+
             <div class="card">
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                @endif
+
+                @if (session('warning'))
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        {{ session('warning') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                @endif
+
                 <div class="card-body">
                     <form action="{{ route('user.update', $user->id) }}" method="POST">
                         @csrf
@@ -17,18 +49,14 @@
 
                         <div class="form-group">
                             <label for="name">Nama</label>
-                            <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $user->name) }}" required>
+                            <input type="text" class="form-control" id="name" name="name"
+                                value="{{ old('name', $user->name) }}" required>
                         </div>
 
                         <div class="form-group">
                             <label for="phone">Telepon</label>
-                            <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone', $user->phone) }}" required inputmode="numeric">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password">Password (Opsional)</label>
-                            <input type="password" class="form-control" id="password" name="password">
-                            <small class="text-muted">Kosongkan jika tidak ingin mengubah password.</small>
+                            <input type="text" class="form-control" id="phone" name="phone"
+                                value="{{ old('phone', $user->phone) }}" required inputmode="numeric">
                         </div>
 
                         <div class="form-group">
@@ -36,7 +64,10 @@
                             <select class="form-control" id="kecamatan_id" name="kecamatan_id">
                                 <option value="">Pilih Kecamatan</option>
                                 @foreach ($kecamatans as $kecamatan)
-                                    <option value="{{ $kecamatan->id }}" {{ $user->kecamatan_id == $kecamatan->id ? 'selected' : '' }}>
+                                    <option value="{{ $kecamatan->id }}"
+                                            data-kode="{{ $kecamatan->kode_kecamatan }}"
+                                            data-nama="{{ $kecamatan->nama_kecamatan }}"
+                                            {{ $user->kecamatan_id == $kecamatan->id ? 'selected' : '' }}>
                                         {{ $kecamatan->nama_kecamatan }}
                                     </option>
                                 @endforeach
@@ -48,7 +79,9 @@
                             <select class="form-control" id="kelurahan_id" name="kelurahan_id">
                                 <option value="">Pilih Kelurahan</option>
                                 @foreach ($kelurahans as $kelurahan)
-                                    <option value="{{ $kelurahan->id }}" {{ $user->kelurahan_id == $kelurahan->id ? 'selected' : '' }}>
+                                    <option value="{{ $kelurahan->id }}"
+                                            data-kode="{{ $kelurahan->kode_kelurahan }}"
+                                            {{ $user->kelurahan_id == $kelurahan->id ? 'selected' : '' }}>
                                         {{ $kelurahan->nama_kelurahan }}
                                     </option>
                                 @endforeach
@@ -59,54 +92,47 @@
                             <label for="tps_id">TPS</label>
                             <select class="form-control" id="tps_id" name="tps_id">
                                 <option value="">Pilih TPS</option>
-                                @foreach ($tps as $tpsItem)
-                                    <option value="{{ $tpsItem->id }}" {{ $user->tps_id == $tpsItem->id ? 'selected' : '' }}>
-                                        {{ $tpsItem->no_tps }}
+                                @foreach ($tps as $tp)
+                                    <option value="{{ $tp->id }}" {{ $user->tps_id == $tp->id ? 'selected' : '' }}>
+                                        {{ $tp->no_tps }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <button type="submit" class="btn btn-warning">Simpan</button>
-                        <a href="{{ route('user.index') }}" class="btn btn-secondary">Kembali</a>
+                        <!-- Username fields -->
+                        <div class="username-field-group">
+                            <div class="form-group" id="username_auto_group">
+                                <label for="username_preview">Username (Auto Generate)</label>
+                                <input type="text" class="form-control" id="username_preview"
+                                       value="{{ $user->username }}" readonly>
+                                <small class="form-text text-muted">Username akan dibuat otomatis berdasarkan pilihan wilayah</small>
+                            </div>
+
+                            <div class="form-group" id="username_manual_group" style="display: none;">
+                                <label for="username_manual">Username</label>
+                                <input type="text" class="form-control" id="username_manual" name="username_manual"
+                                       value="{{ $user->username }}">
+                                <small class="form-text text-muted">Masukkan username yang diinginkan</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password Baru (kosongkan jika tidak ingin mengubah)</label>
+                            <input type="password" class="form-control" id="password" name="password">
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-warning">Update</button>
+                            <a href="{{ route('user.index') }}" class="btn btn-secondary">Kembali</a>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </section>
-
-    @push('scripts')
-    <script>
-        $(document).ready(function() {
-            // Load Kelurahan when Kecamatan is selected
-            $('#kecamatan_id').change(function() {
-                let kecamatanId = $(this).val();
-                $('#kelurahan_id').html('<option value="">Pilih Kelurahan</option>');
-                $('#tps_id').html('<option value="">Pilih TPS</option>');
-
-                if (kecamatanId) {
-                    $.get('/kelurahan/by-kecamatan/' + kecamatanId, function(data) {
-                        $.each(data, function(id, nama_kelurahan) {
-                            $('#kelurahan_id').append(new Option(nama_kelurahan, id));
-                        });
-                    });
-                }
-            });
-
-            // Load TPS when Kelurahan is selected
-            $('#kelurahan_id').change(function() {
-                let kelurahanId = $(this).val();
-                $('#tps_id').html('<option value="">Pilih TPS</option>');
-
-                if (kelurahanId) {
-                    $.get('/get-tps-by-kelurahan/' + kelurahanId, function(data) {
-                        $.each(data, function(index, tps) {
-                            $('#tps_id').append(new Option(tps.no_tps, tps.id));
-                        });
-                    });
-                }
-            });
-        });
-    </script>
-    @endpush
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('js/user.js') }}"></script>
+@endpush

@@ -175,7 +175,8 @@ class KelurahanController extends Controller
             [
                 'kode_kelurahan' => [
                     'required',
-                    'digits:3', // Ensures exactly 3 numeric digits
+                    'numeric',
+                    'max:9999999', // Ensures a maximum of 7 numeric digits
                     Rule::unique('kelurahans', 'kode_kelurahan')->where('kecamatan_id', $request->kecamatan_id), // Unique within the specified kecamatan_id
                 ],
 
@@ -248,7 +249,8 @@ class KelurahanController extends Controller
         $validated = $request->validate([
             'kode_kelurahan' => [
                 'required',
-                'digits:3', // Ensures exactly 3 numeric digits
+                'numeric',
+                'max:9999999', // Ensures a maximum of 7 numeric digits
                 Rule::unique('kelurahans', 'kode_kelurahan')
                     ->ignore($kelurahan->id) // Ignore current record during update
                     ->where('kecamatan_id', $request->kecamatan_id), // Unique within the specified kecamatan_id

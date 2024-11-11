@@ -81,19 +81,18 @@ function updateUsernamePreview() {
         let kecamatanKode = $('#kecamatan_id option:selected').data('kode');
         let kelurahanKode = $('#kelurahan_id option:selected').data('kode');
 
-        username = kecamatanKode + '.' + kelurahanKode;
-
         if (tpsId) {
-            let tpsNo = $('#tps_id option:selected').text();
-            if (tpsNo && tpsNo !== 'Pilih TPS') {
-                username += '.' + tpsNo;
-            }
+            // Jika memilih sampai TPS, hilangkan spasi dan titik di akhir
+            username = kecamatanKode + '.' + kelurahanKode + '.' +
+                      $('#tps_id option:selected').text().trim();
+        } else {
+            // Jika hanya sampai kelurahan, tambahkan angka 1
+            username = kecamatanKode + '1.' + kelurahanKode;
         }
     }
 
-    $('#username_preview').val(username);
+    $('#username_preview').val(username.trim()); // Tambahkan trim() untuk menghilangkan spasi
 }
-
 // Ketika Kecamatan dipilih
 $('#kecamatan_id').change(function() {
     let kecamatanId = $(this).val();  // Ambil ID Kecamatan yang dipilih
