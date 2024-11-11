@@ -7,8 +7,20 @@ use App\Models\Tps;
 use App\Models\Kecamatan;
 use App\Models\Kelurahan;
 use Illuminate\Support\Str;
+use App\Models\DataSuaraSah;
+use App\Models\JumlahPemilihDpk;
+use App\Models\JumlahPemilihDpt;
+use App\Models\JumlahDataPemilih;
+use App\Models\JumlahPemilihDptb;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\PenggunaHakPilihDpk;
+use App\Models\PenggunaHakPilihDpt;
+use App\Models\PenggunaanSuratSuara;
+use App\Models\PenggunaHakPilihDptb;
+use App\Models\JumlahPenggunaHakPilih;
+use App\Models\JumlahPemilihDisabilitas;
 use Illuminate\Notifications\Notifiable;
+use App\Models\PenggunaHakPilihDisabilitas;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -69,4 +81,63 @@ class User extends Authenticatable
         return $this->belongsTo(Tps::class, 'tps_id');
     }
 
+    public function dataSuaraSah()
+    {
+        return $this->hasMany(DataSuaraSah::class, 'user_id');
+    }
+
+    public function jumlahDataPemilih()
+    {
+        return $this->hasMany(JumlahDataPemilih::class, 'user_id');
+    }
+
+    public function jumlahPemilihDisabilitas()
+    {
+        return $this->hasMany(JumlahPemilihDisabilitas::class, 'user_id');
+    }
+
+    public function jumlahPemilihDpk()
+    {
+        return $this->hasMany(JumlahPemilihDpk::class, 'user_id');
+    }
+
+    public function jumlahPemilihDpt()
+    {
+        return $this->hasMany(JumlahPemilihDpt::class, 'user_id');
+    }
+
+    public function jumlahPemilihDptb()
+    {
+        return $this->hasMany(JumlahPemilihDptb::class, 'user_id');
+    }
+
+    public function jumlahPenggunaHakPilih()
+    {
+        return $this->hasMany(JumlahPenggunaHakPilih::class, 'user_id');
+    }
+
+    public function penggunaanSuratSuara()
+    {
+        return $this->hasMany(PenggunaanSuratSuara::class, 'user_id');
+    }
+
+    public function penggunaHakPilihDisabilitas()
+    {
+        return $this->hasMany(PenggunaHakPilihDisabilitas::class, 'user_id');
+    }
+
+    public function penggunaHakPilihDpk()
+    {
+        return $this->hasMany(PenggunaHakPilihDpk::class, 'user_id');
+    }
+
+    public function penggunaHakPilihDpt()
+    {
+        return $this->hasMany(PenggunaHakPilihDpt::class, 'user_id');
+    }
+
+    public function penggunaHakPilihDptb()
+    {
+        return $this->hasMany(PenggunaHakPilihDptb::class, 'user_id');
+    }
 }
