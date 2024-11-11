@@ -92,8 +92,9 @@ class JumlahDataPemilihController extends Controller
      */
     public function edit($id)
     {
-        $data = JumlahDataPemilih::findOrFail($id);
-        return view('rekapitulasi.jumlah_data_pemilih.edit', compact('data'));
+        // Mendapatkan data yang akan diedit
+        $jumlahPemilih = JumlahDataPemilih::findOrFail($id);
+        return view('rekapitulasi.jumlah_data_pemilih.edit', compact('jumlahPemilih'));
     }
 
     /**
@@ -101,6 +102,7 @@ class JumlahDataPemilihController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Validasi data
         $request->validate([
             'tipe_pemilihan' => 'required|in:gubernur,walikota',
             'laki_laki' => 'required|integer',
@@ -108,14 +110,15 @@ class JumlahDataPemilihController extends Controller
             'jumlah' => 'required|integer',
         ]);
 
+        // Menghitung jumlah
         $calculatedJumlah = $request->laki_laki + $request->perempuan;
         if ((int)$request->jumlah !== $calculatedJumlah) {
             return redirect()->back()->withErrors(['jumlah' => 'Jumlah tidak sesuai dengan total laki-laki dan perempuan.'])->withInput();
         }
 
         try {
-            $data = JumlahDataPemilih::findOrFail($id);
-            $data->update($request->all());
+            $dataPemilih = JumlahDataPemilih::findOrFail($id);
+            $dataPemilih->update($request->all());
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan saat memperbarui data: ' . $e->getMessage()])->withInput();
         }
@@ -129,8 +132,8 @@ class JumlahDataPemilihController extends Controller
     public function destroy($id)
     {
         try {
-            $data = JumlahDataPemilih::findOrFail($id);
-            $data->delete();
+            $dataPemilih = JumlahDataPemilih::findOrFail($id);
+            $dataPemilih->delete();
         } catch (\Exception $e) {
             return redirect()->route('jumlah_data_pemilih.index')->withErrors(['error' => 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage()]);
         }

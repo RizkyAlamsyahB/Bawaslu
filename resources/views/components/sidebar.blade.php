@@ -34,7 +34,7 @@
                     </li>
                 @endif
 
-                  <li class="menu-header">Rekapitulasi</li>
+             
 
                 <!-- Menu Rekapitulasi -->
                 <li class="dropdown {{ Request::is('rekapitulasi*') ? 'active' : '' }}">
