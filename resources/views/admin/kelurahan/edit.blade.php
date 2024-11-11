@@ -19,31 +19,31 @@
                     <h4>Formulir Edit Kelurahan</h4>
                 </div>
                 @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            @endif
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                @endif
 
-            @if (session('warning'))
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    {{ session('warning') }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            @endif
+                @if (session('warning'))
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        {{ session('warning') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                @endif
 
-            @if (session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ session('error') }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            @endif
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                @endif
                 <div class="card-body">
                     <form action="{{ route('kelurahan.update', $kelurahan->id) }}" method="POST">
                         @csrf
@@ -77,7 +77,8 @@
                         <div class="form-group">
                             <label for="kode_kelurahan">Kode Kelurahan</label>
                             <input type="text" class="form-control" id="kode_kelurahan" name="kode_kelurahan"
-                                   value="{{ old('kode_kelurahan', $kelurahan->kode_kelurahan) }}" required inputmode="numeric">
+                                value="{{ old('kode_kelurahan', $kelurahan->kode_kelurahan) }}" required
+                                inputmode="numeric">
                             @error('kode_kelurahan')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror

@@ -190,18 +190,20 @@ class TpsController extends Controller
     {
         try {
             // Validasi dulu sebelum cek exists
-            $validator = Validator::make($request->all(), [
-                'no_tps' => 'required|numeric|max:9999',
-                'kelurahan_id' => 'required|exists:kelurahans,id',
-                'kecamatan_id' => 'required|exists:kecamatans,id',
-            ], [
-                'no_tps.max' => 'No TPS tidak boleh lebih dari 9999'
-            ]);
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'no_tps' => 'required|numeric|max:9999',
+                    'kelurahan_id' => 'required|exists:kelurahans,id',
+                    'kecamatan_id' => 'required|exists:kecamatans,id',
+                ],
+                [
+                    'no_tps.max' => 'No TPS tidak boleh lebih dari 9999',
+                ],
+            );
 
             if ($validator->fails()) {
-                return redirect()->back()
-                    ->withInput()
-                    ->withErrors($validator);
+                return redirect()->back()->withInput()->withErrors($validator);
             }
 
             // Cek dulu apakah kombinasi tersebut sudah ada
@@ -211,9 +213,7 @@ class TpsController extends Controller
                 ->exists();
 
             if ($exists) {
-                return redirect()->back()
-                    ->withInput()
-                    ->with('warning', 'TPS dengan nomor tersebut sudah ada di kelurahan dan kecamatan yang dipilih!');
+                return redirect()->back()->withInput()->with('warning', 'TPS dengan nomor tersebut sudah ada di kelurahan dan kecamatan yang dipilih!');
             }
 
             $tps = new Tps();
@@ -225,9 +225,7 @@ class TpsController extends Controller
 
             return redirect()->route('tps.index')->with('success', 'Data TPS berhasil ditambahkan!');
         } catch (\Exception $e) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Terjadi kesalahan saat menyimpan data TPS.');
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat menyimpan data TPS.');
         }
     }
 
@@ -245,48 +243,46 @@ class TpsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-   public function update(Request $request, string $id)
-{
-    try {
-        $tps = Tps::findOrFail($id);
+    public function update(Request $request, string $id)
+    {
+        try {
+            $tps = Tps::findOrFail($id);
 
-        // Validasi dulu sebelum cek exists
-        $validator = Validator::make($request->all(), [
-            'no_tps' => 'required|numeric|max:9999',
-            'kelurahan_id' => 'required|exists:kelurahans,id',
-            'kecamatan_id' => 'required|exists:kecamatans,id',
-        ], [
-            'no_tps.max' => 'No TPS tidak boleh lebih dari 9999'
-        ]);
+            // Validasi dulu sebelum cek exists
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'no_tps' => 'required|numeric|max:9999',
+                    'kelurahan_id' => 'required|exists:kelurahans,id',
+                    'kecamatan_id' => 'required|exists:kecamatans,id',
+                ],
+                [
+                    'no_tps.max' => 'No TPS tidak boleh lebih dari 9999',
+                ],
+            );
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withInput()
-                ->withErrors($validator);
+            if ($validator->fails()) {
+                return redirect()->back()->withInput()->withErrors($validator);
+            }
+
+            // Cek apakah kombinasi sudah ada (kecuali untuk record yang sedang diedit)
+            $exists = Tps::where('no_tps', $request->no_tps)
+                ->where('kelurahan_id', $request->kelurahan_id)
+                ->where('kecamatan_id', $request->kecamatan_id)
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($exists) {
+                return redirect()->back()->withInput()->with('warning', 'TPS dengan nomor tersebut sudah ada di kelurahan dan kecamatan yang dipilih!');
+            }
+
+            $tps->update($request->all());
+
+            return redirect()->route('tps.index')->with('success', 'Data TPS berhasil diperbarui!');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat memperbarui data TPS.');
         }
-
-        // Cek apakah kombinasi sudah ada (kecuali untuk record yang sedang diedit)
-        $exists = Tps::where('no_tps', $request->no_tps)
-            ->where('kelurahan_id', $request->kelurahan_id)
-            ->where('kecamatan_id', $request->kecamatan_id)
-            ->where('id', '!=', $id)
-            ->exists();
-
-        if ($exists) {
-            return redirect()->back()
-                ->withInput()
-                ->with('warning', 'TPS dengan nomor tersebut sudah ada di kelurahan dan kecamatan yang dipilih!');
-        }
-
-        $tps->update($request->all());
-
-        return redirect()->route('tps.index')->with('success', 'Data TPS berhasil diperbarui!');
-    } catch (\Exception $e) {
-        return redirect()->back()
-            ->withInput()
-            ->with('error', 'Terjadi kesalahan saat memperbarui data TPS.');
     }
-}
     /**
      * Remove the specified resource from storage.
      */

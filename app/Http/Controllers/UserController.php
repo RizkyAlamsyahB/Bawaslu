@@ -93,7 +93,7 @@ class UserController extends Controller
         try {
             $request->validate([
                 'name' => 'required|string|max:100',
-                'phone' => 'required|numeric|digits_between:10,13',  // Ubah ini
+                'phone' => 'required|numeric|digits_between:10,13', // Ubah ini
                 'password' => 'required|min:8',
                 'kecamatan_id' => 'nullable',
                 'kelurahan_id' => 'nullable',
@@ -146,7 +146,7 @@ class UserController extends Controller
             Log::info('Username yang akan dibuat:', [
                 'username' => $username,
                 'role' => $role,
-                'request_data' => $request->all()
+                'request_data' => $request->all(),
             ]);
 
             // Cek apakah username sudah ada (untuk non-manual username)
@@ -187,15 +187,15 @@ class UserController extends Controller
             Log::info('User berhasil dibuat:', ['user_id' => $user->id]);
 
             return redirect()->route('user.index')->with('success', 'User berhasil ditambahkan');
-
         } catch (\Exception $e) {
             // Log error
             Log::error('Error saat membuat user:', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
-            return redirect()->back()
+            return redirect()
+                ->back()
                 ->withInput()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
@@ -210,18 +210,18 @@ class UserController extends Controller
         $kecamatans = Kecamatan::orderBy('nama_kecamatan', 'asc')->get();
 
         // Ambil kelurahan berdasarkan kecamatan yang dipilih dan urutkan
-        $kelurahans = $user->kecamatan_id ?
-            Kelurahan::where('kecamatan_id', $user->kecamatan_id)
-                     ->orderBy('nama_kelurahan', 'asc')
-                     ->get() :
-            collect();
+        $kelurahans = $user->kecamatan_id
+            ? Kelurahan::where('kecamatan_id', $user->kecamatan_id)
+                ->orderBy('nama_kelurahan', 'asc')
+                ->get()
+            : collect();
 
         // Ambil TPS berdasarkan kelurahan yang dipilih dan urutkan
-        $tps = $user->kelurahan_id ?
-            Tps::where('kelurahan_id', $user->kelurahan_id)
-               ->orderByRaw('CAST(no_tps AS UNSIGNED) ASC')
-               ->get() :
-            collect();
+        $tps = $user->kelurahan_id
+            ? Tps::where('kelurahan_id', $user->kelurahan_id)
+                ->orderByRaw('CAST(no_tps AS UNSIGNED) ASC')
+                ->get()
+            : collect();
 
         return view('admin.user.edit', compact('user', 'kecamatans', 'kelurahans', 'tps'));
     }
@@ -236,10 +236,7 @@ class UserController extends Controller
                 'kecamatan_id' => 'nullable',
                 'kelurahan_id' => 'nullable',
                 'tps_id' => 'nullable',
-                'username_manual' => [
-                    'nullable',
-                    Rule::unique('users', 'username')->ignore($user->id),
-                ],
+                'username_manual' => ['nullable', Rule::unique('users', 'username')->ignore($user->id)],
                 'password' => 'nullable|min:8',
             ]);
 
@@ -291,14 +288,14 @@ class UserController extends Controller
             $user->update($userData);
 
             return redirect()->route('user.index')->with('success', 'User berhasil diupdate');
-
         } catch (\Exception $e) {
             Log::error('Error saat update user:', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
-            return redirect()->back()
+            return redirect()
+                ->back()
                 ->withInput()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }

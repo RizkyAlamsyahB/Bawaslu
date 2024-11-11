@@ -64,10 +64,9 @@
                             <select class="form-control" id="kecamatan_id" name="kecamatan_id">
                                 <option value="">Pilih Kecamatan</option>
                                 @foreach ($kecamatans as $kecamatan)
-                                    <option value="{{ $kecamatan->id }}"
-                                            data-kode="{{ $kecamatan->kode_kecamatan }}"
-                                            data-nama="{{ $kecamatan->nama_kecamatan }}"
-                                            {{ $user->kecamatan_id == $kecamatan->id ? 'selected' : '' }}>
+                                    <option value="{{ $kecamatan->id }}" data-kode="{{ $kecamatan->kode_kecamatan }}"
+                                        data-nama="{{ $kecamatan->nama_kecamatan }}"
+                                        {{ $user->kecamatan_id == $kecamatan->id ? 'selected' : '' }}>
                                         {{ $kecamatan->nama_kecamatan }}
                                     </option>
                                 @endforeach
@@ -79,9 +78,8 @@
                             <select class="form-control" id="kelurahan_id" name="kelurahan_id">
                                 <option value="">Pilih Kelurahan</option>
                                 @foreach ($kelurahans as $kelurahan)
-                                    <option value="{{ $kelurahan->id }}"
-                                            data-kode="{{ $kelurahan->kode_kelurahan }}"
-                                            {{ $user->kelurahan_id == $kelurahan->id ? 'selected' : '' }}>
+                                    <option value="{{ $kelurahan->id }}" data-kode="{{ $kelurahan->kode_kelurahan }}"
+                                        {{ $user->kelurahan_id == $kelurahan->id ? 'selected' : '' }}>
                                         {{ $kelurahan->nama_kelurahan }}
                                     </option>
                                 @endforeach
@@ -105,14 +103,15 @@
                             <div class="form-group" id="username_auto_group">
                                 <label for="username_preview">Username (Auto Generate)</label>
                                 <input type="text" class="form-control" id="username_preview"
-                                       value="{{ $user->username }}" readonly>
-                                <small class="form-text text-muted">Username akan dibuat otomatis berdasarkan pilihan wilayah</small>
+                                    value="{{ $user->username }}" readonly>
+                                <small class="form-text text-muted">Username akan dibuat otomatis berdasarkan pilihan
+                                    wilayah</small>
                             </div>
 
                             <div class="form-group" id="username_manual_group" style="display: none;">
                                 <label for="username_manual">Username</label>
                                 <input type="text" class="form-control" id="username_manual" name="username_manual"
-                                       value="{{ $user->username }}">
+                                    value="{{ $user->username }}">
                                 <small class="form-text text-muted">Masukkan username yang diinginkan</small>
                             </div>
                         </div>

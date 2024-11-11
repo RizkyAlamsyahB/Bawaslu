@@ -74,36 +74,49 @@
 @endsection
 
 @push('scripts')
-<!-- DataTables JS -->
-<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 
-<script>
-    let table;
-    let deleteId = null;
+    <script>
+        let table;
+        let deleteId = null;
 
-    $(document).ready(function() {
-        // Inisialisasi DataTables
-        table = $('#usersTable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: "{{ route('user.index') }}",
-            columns: [
-                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'name', name: 'name' },
-                { data: 'username', name: 'username' },
-                { data: 'role', name: 'role' },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                }
-            ]
+        $(document).ready(function() {
+            // Inisialisasi DataTables
+            table = $('#usersTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('user.index') }}",
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'name',
+                        name: 'name'
+                    },
+                    {
+                        data: 'username',
+                        name: 'username'
+                    },
+                    {
+                        data: 'role',
+                        name: 'role'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    }
+                ]
+            });
         });
-    });
 
-    const csrfToken = "{{ csrf_token() }}"; // CSRF token for AJAX requests
-</script>
-<script src="{{ asset('js/user.js') }}"></script>
+        const csrfToken = "{{ csrf_token() }}"; // CSRF token for AJAX requests
+    </script>
+    <script src="{{ asset('js/user.js') }}"></script>
 @endpush

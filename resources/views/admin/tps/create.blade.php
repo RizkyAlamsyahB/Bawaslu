@@ -77,7 +77,8 @@
 
                         <div class="form-group">
                             <label for="no_tps">Nomor TPS</label>
-                            <input type="text" class="form-control" id="no_tps" name="no_tps" value="{{ old('no_tps') }}" required inputmode="numeric">
+                            <input type="text" class="form-control" id="no_tps" name="no_tps"
+                                value="{{ old('no_tps') }}" required inputmode="numeric">
                             @error('no_tps')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror

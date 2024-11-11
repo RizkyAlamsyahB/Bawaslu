@@ -187,5 +187,5 @@
         const csvImportError = {{ $errors->has('csv_file') ? 'true' : 'false' }};
         const importSuccessMessage = "{{ session('import_success') }}";
     </script>
-     <script src="{{ asset('js/kecamatan.js') }}"></script>
+    <script src="{{ asset('js/kecamatan.js') }}"></script>
 @endpush
