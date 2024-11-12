@@ -11,10 +11,12 @@ class PenggunaHakPilihDpt extends Model
 {
     use HasFactory;
 
+    protected $table = 'pengguna_hak_pilih_dpt';
+
     protected $keyType = 'string';  // Gunakan string untuk UUID
     public $incrementing = false;  // Nonaktifkan auto-increment karena UUID tidak auto-increment
 
-    protected $fillable = ['tipe_pemilihan', 'laki_laki', 'perempuan', 'jumlah'];
+    protected $fillable = ['tipe_pemilihan_id', 'laki_laki', 'perempuan', 'jumlah'];
 
     protected static function booted()
     {

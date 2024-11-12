@@ -8,6 +8,7 @@ use App\Models\Kecamatan;
 use App\Models\Kelurahan;
 use Illuminate\Support\Str;
 use App\Models\DataSuaraSah;
+use App\Models\TipePemilihan;
 use App\Models\JumlahPemilihDpk;
 use App\Models\JumlahPemilihDpt;
 use App\Models\JumlahDataPemilih;
@@ -28,7 +29,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
- 
+
 
     protected $keyType = 'string'; // Gunakan string untuk UUID
     public $incrementing = false; // Nonaktifkan auto-increment karena UUID tidak auto-increment
@@ -81,6 +82,11 @@ class User extends Authenticatable
     public function tps()
     {
         return $this->belongsTo(Tps::class, 'tps_id');
+    }
+
+    public function tipePemilihans()
+    {
+        return $this->belongsToMany(TipePemilihan::class, 'user_tipe_pemilihan');
     }
 
 }

@@ -4,9 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TpsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WizardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KecamatanController;
 use App\Http\Controllers\KelurahanController;
+use App\Http\Controllers\RekapitulasiController;
+use App\Http\Controllers\PasanganCalonController;
+use App\Http\Controllers\TipePemilihanController;
 use App\Http\Controllers\JumlahDataPemilihController;
 
 /*
@@ -52,6 +56,9 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
     Route::get('/kelurahan/by-kecamatan/{kecamatan_id}', [UserController::class, 'getKelurahanByKecamatan']);
     Route::get('/tps/by-kelurahan/{kelurahan_id}', [UserController::class, 'getTpsByKelurahan']);
 
+    Route::resource('tipe_pemilihan', TipePemilihanController::class);
+
+    Route::resource('pasangan_calon', PasanganCalonController::class);
 });
 
 Route::middleware(['auth', 'role:kecamatan'])->group(function () {
@@ -64,8 +71,12 @@ Route::middleware(['auth', 'role:kelurahan'])->group(function () {
 
 Route::middleware(['auth', 'role:tps,super_admin'])->group(function () {
     Route::resource('jumlah_data_pemilih', JumlahDataPemilihController::class);
-});
+    Route::get('/rekapitulasi/{tipe_pemilihan_id}', [RekapitulasiController::class, 'create'])->name('rekapitulasi.create');
 
+    Route::get('/gubernur/wizard', [WizardController::class, 'create'])->name('wizard.gubernur');
+    Route::get('/walikota/wizard', [WizardController::class, 'create'])->name('wizard.walikota');
+    Route::post('/wizard/store', [WizardController::class, 'store'])->name('wizard.store');
+});
 
 Route::middleware(['auth', 'role:kota'])->group(function () {
     // Routes untuk kota

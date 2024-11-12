@@ -43,7 +43,7 @@
                     </div>
                 @endif -->
 
-                
+
                 <form id="jumlahPemilihForm" action="{{ route('jumlah_data_pemilih.store') }}" method="POST">
                     @csrf
                     <div class="form-group">
@@ -60,7 +60,7 @@
 
                     <div class="form-group">
                         <label for="laki_laki">Laki-laki</label>
-                        <input type="number" class="form-control" id="laki_laki" name="laki_laki" 
+                        <input type="number" class="form-control" id="laki_laki" name="laki_laki"
                                value="{{ old('laki_laki') }}" oninput="calculateSum()" required>
                         @error('laki_laki')
                             <div class="text-danger">{{ $message }}</div>
@@ -69,7 +69,7 @@
 
                     <div class="form-group">
                         <label for="perempuan">Perempuan</label>
-                        <input type="number" class="form-control" id="perempuan" name="perempuan" 
+                        <input type="number" class="form-control" id="perempuan" name="perempuan"
                                value="{{ old('perempuan') }}" oninput="calculateSum()" required>
                         @error('perempuan')
                             <div class="text-danger">{{ $message }}</div>
@@ -80,7 +80,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="jumlah">Jumlah Yang Diinputkan</label>
-                                <input type="number" class="form-control" id="jumlah" name="jumlah" 
+                                <input type="number" class="form-control" id="jumlah" name="jumlah"
                                        value="{{ old('jumlah') }}" required>
                                 @error('jumlah')
                                     <div class="text-danger">{{ $message }}</div>
@@ -90,7 +90,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="calculated_jumlah">Jumlah Yang Harus Diinputkan</label>
-                                <input type="number" class="form-control bg-light" id="calculated_jumlah" 
+                                <input type="number" class="form-control bg-light" id="calculated_jumlah"
                                        readonly disabled>
                             </div>
                         </div>
@@ -113,7 +113,7 @@
         const lakiLaki = parseInt(document.getElementById('laki_laki').value) || 0;
         const perempuan = parseInt(document.getElementById('perempuan').value) || 0;
         const calculatedJumlah = lakiLaki + perempuan;
-        
+
         // Update calculated_jumlah
         document.getElementById('calculated_jumlah').value = calculatedJumlah;
     }
@@ -127,7 +127,7 @@
         document.getElementById('jumlahAlert').classList.remove('d-none');
         return false; // Mencegah form dari pengiriman
     }
-    
+
     // Sembunyikan alert jika jumlah sesuai
     document.getElementById('jumlahAlert').classList.add('d-none');
     return true; // Mengizinkan form untuk disubmit jika jumlah sesuai

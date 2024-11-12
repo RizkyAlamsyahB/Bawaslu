@@ -2,31 +2,32 @@
 
 namespace App\Models;
 
-use App\Models\User;
-use Illuminate\Support\Str;
+use App\Models\PasanganCalon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class DataSuaraSah extends Model
 {
-    use HasFactory;
-
+    use HasUuids;
     protected $keyType = 'string';  // Gunakan string untuk UUID
-    public $incrementing = false;  // Nonaktifkan auto-increment karena UUID tidak auto-increment
+    public $incrementing = false;
 
-    protected $fillable = ['tipe_pemilihan', 'nama_pasangan_calon', 'jumlah_suara_sah', 'jumlah_suara_tidak_sah', 'total_suara_sah_dan_tidak_sah'];
 
-    protected static function booted()
+    protected $table = 'data_suara_sah';
+
+    protected $fillable = [
+        'pasangan_calon_id',
+        'jumlah_suara_sah',
+        'jumlah_suara_tidak_sah',
+        'total_suara_sah_dan_tidak_sah',
+    ];
+
+    /**
+     * Relationship with PasanganCalon model.
+     */
+    public function pasanganCalon()
     {
-        static::creating(function ($user) {
-            if (empty($user->id)) {
-                $user->id = (string) Str::uuid();  // Generate UUID saat pembuatan user
-            }
-        });
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(PasanganCalon::class, 'pasangan_calon_id');
     }
 }
+
