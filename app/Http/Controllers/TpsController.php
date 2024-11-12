@@ -178,8 +178,8 @@ class TpsController extends Controller
      */
     public function create()
     {
-        $kelurahans = Kelurahan::all();
-        $kecamatans = Kecamatan::all();
+        $kelurahans = Kelurahan::orderBy('nama_kelurahan', 'asc')->get();
+        $kecamatans = Kecamatan::orderBy('nama_kecamatan', 'asc')->get();
         return view('admin.tps.create', compact('kelurahans', 'kecamatans'));
     }
 
@@ -235,8 +235,8 @@ class TpsController extends Controller
     public function edit(string $id)
     {
         $tps = Tps::findOrFail($id);
-        $kelurahans = Kelurahan::all();
-        $kecamatans = Kecamatan::all();
+        $kelurahans = Kelurahan::orderBy('nama_kelurahan', 'asc')->get();
+        $kecamatans = Kecamatan::orderBy('nama_kecamatan', 'asc')->get();
         return view('admin.tps.edit', compact('tps', 'kelurahans', 'kecamatans'));
     }
 

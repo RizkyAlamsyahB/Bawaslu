@@ -82,20 +82,20 @@ function updateUsernamePreview() {
         let kelurahanKode = $('#kelurahan_id option:selected').data('kode');
 
         if (tpsId) {
-            // Jika memilih sampai TPS, hilangkan spasi dan titik di akhir
+            // Jika memilih sampai TPS
             username = kecamatanKode + '.' + kelurahanKode + '.' +
                       $('#tps_id option:selected').text().trim();
         } else {
-            // Jika hanya sampai kelurahan, tambahkan angka 1
-            username = kecamatanKode + '1.' + kelurahanKode;
+            // Jika hanya sampai kelurahan, tidak perlu tambahkan angka 1
+            username = kecamatanKode + '.' + kelurahanKode;
         }
     }
 
-    $('#username_preview').val(username.trim()); // Tambahkan trim() untuk menghilangkan spasi
+    $('#username_preview').val(username.trim());
 }
 // Ketika Kecamatan dipilih
 $('#kecamatan_id').change(function() {
-    let kecamatanId = $(this).val();  // Ambil ID Kecamatan yang dipilih
+    let kecamatanId = $(this).val();
 
     // Reset dropdown Kelurahan dan TPS
     $('#kelurahan_id').html('<option value="">Pilih Kelurahan</option>');
@@ -106,9 +106,13 @@ $('#kecamatan_id').change(function() {
     // Jika Kecamatan dipilih, ambil data Kelurahan yang terkait
     if (kecamatanId) {
         $.get('/kelurahan/by-kecamatan/' + kecamatanId, function(data) {
-            // Iterasi data Kelurahan yang diterima dari server
-            $.each(data, function(index, kelurahan) {
-                // Tambahkan option Kelurahan ke dropdown dengan data-kode
+            // Sort data berdasarkan nama_kelurahan
+            let sortedData = Object.values(data).sort((a, b) =>
+                a.nama_kelurahan.localeCompare(b.nama_kelurahan)
+            );
+
+            // Iterasi data Kelurahan yang sudah diurutkan
+            sortedData.forEach(function(kelurahan) {
                 let option = new Option(kelurahan.nama_kelurahan, kelurahan.id);
                 $(option).attr('data-kode', kelurahan.kode_kelurahan);
                 $('#kelurahan_id').append(option);
@@ -119,7 +123,7 @@ $('#kecamatan_id').change(function() {
 
 // Ketika Kelurahan dipilih
 $('#kelurahan_id').change(function() {
-    let kelurahanId = $(this).val();  // Ambil ID Kelurahan yang dipilih
+    let kelurahanId = $(this).val();
 
     // Reset dropdown TPS
     $('#tps_id').html('<option value="">Pilih TPS</option>');
@@ -129,11 +133,15 @@ $('#kelurahan_id').change(function() {
     // Jika Kelurahan dipilih, ambil data TPS yang terkait
     if (kelurahanId) {
         $.get('/tps/by-kelurahan/' + kelurahanId, function(data) {
-            // Periksa format data dan tampilkan dengan benar
-            $.each(data, function(index, tps) {
-                // Pastikan tps adalah objek dengan atribut yang sesuai
+            // Sort data berdasarkan nomor TPS (sebagai angka)
+            let sortedData = data.sort((a, b) => {
+                return parseInt(a.no_tps) - parseInt(b.no_tps);
+            });
+
+            // Iterasi data TPS yang sudah diurutkan
+            sortedData.forEach(function(tps) {
                 if (tps.no_tps && tps.id) {
-                    $('#tps_id').append(new Option(tps.no_tps, tps.id)); // Menambahkan no_tps dan id
+                    $('#tps_id').append(new Option(tps.no_tps, tps.id));
                 }
             });
         });

@@ -65,9 +65,14 @@ class UserController extends Controller
     // Menampilkan form untuk membuat user baru
     public function create()
     {
-        $kecamatans = Kecamatan::all();
-        $kelurahans = Kelurahan::all();
-        $tps = Tps::all();
+        // Urutkan kecamatan berdasarkan nama
+        $kecamatans = Kecamatan::orderBy('nama_kecamatan', 'asc')->get();
+
+        // Inisialisasi kelurahan dan tps sebagai collection kosong
+        // akan diisi melalui AJAX ketika user memilih kecamatan/kelurahan
+        $kelurahans = collect();
+        $tps = collect();
+
         return view('admin.user.create', compact('kecamatans', 'kelurahans', 'tps'));
     }
 
@@ -136,8 +141,8 @@ class UserController extends Controller
                     $username = $kecamatan->kode_kecamatan . '.' . $kelurahan->kode_kelurahan . '.' . $tps->no_tps;
                     $role = 'tps';
                 } else {
-                    // Jika hanya sampai kelurahan, tambahkan angka 1
-                    $username = $kecamatan->kode_kecamatan . '1.' . $kelurahan->kode_kelurahan;
+
+                    $username = $kecamatan->kode_kecamatan . '.' . $kelurahan->kode_kelurahan;
                     $role = 'kelurahan';
                 }
             }
@@ -264,7 +269,7 @@ class UserController extends Controller
                     $role = 'tps';
                 } else {
                     // Role kelurahan
-                    $username = $kecamatan->kode_kecamatan . '1.' . $kelurahan->kode_kelurahan;
+                    $username = $kecamatan->kode_kecamatan . '.' . $kelurahan->kode_kelurahan;
                     $role = 'kelurahan';
                 }
             }

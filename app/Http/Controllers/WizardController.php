@@ -21,12 +21,54 @@ use App\Models\PenggunaHakPilihDisabilitas;
 
 class WizardController extends Controller
 {
+    // Tambahkan method untuk cek apakah sudah pernah diisi
+    private function checkIfDataExists($tipePemilihanId)
+    {
+        // Cek data sesuai dengan current step
+        $currentStep = session('current_step', 1);
+
+        switch ($currentStep) {
+            case 1:
+                return JumlahPemilihDpt::where('tipe_pemilihan_id', $tipePemilihanId)->exists();
+            case 2:
+                return JumlahPemilihDptb::where('tipe_pemilihan_id', $tipePemilihanId)->exists();
+            case 3:
+                return JumlahPemilihDpk::where('tipe_pemilihan_id', $tipePemilihanId)->exists();
+            case 4:
+                return JumlahDataPemilih::where('tipe_pemilihan_id', $tipePemilihanId)->exists();
+            case 5:
+                return PenggunaHakPilihDpt::where('tipe_pemilihan_id', $tipePemilihanId)->exists();
+            case 6:
+                return PenggunaHakPilihDptb::where('tipe_pemilihan_id', $tipePemilihanId)->exists();
+            case 7:
+                return PenggunaHakPilihDpk::where('tipe_pemilihan_id', $tipePemilihanId)->exists();
+            case 8:
+                return JumlahPenggunaHakPilih::where('tipe_pemilihan_id', $tipePemilihanId)->exists();
+            case 9:
+                return JumlahPemilihDisabilitas::where('tipe_pemilihan_id', $tipePemilihanId)->exists();
+            case 10:
+                return PenggunaHakPilihDisabilitas::where('tipe_pemilihan_id', $tipePemilihanId)->exists();
+            case 11:
+                return PenggunaanSuratSuara::where('tipe_pemilihan_id', $tipePemilihanId)->exists();
+            case 12:
+                return DataSuaraSah::whereHas('pasanganCalon', function ($query) use ($tipePemilihanId) {
+                    $query->where('tipe_pemilihan_id', $tipePemilihanId);
+                })->exists();
+            default:
+                return false;
+        }
+    }
+
     public function gubernur()
     {
         $tipePemilihan = TipePemilihan::where('nama', 'gubernur')->first();
-        $currentStep = session('current_step', 1);
 
-        // Ambil data pasangan calon untuk step 12
+        // Cek apakah data sudah ada
+        if ($this->checkIfDataExists($tipePemilihan->id)) {
+            return redirect()->route('dashboard')->with('error', 'Data untuk pemilihan Gubernur sudah pernah diisi!');
+        }
+
+        $currentStep = session('current_step', 1);
         $pasanganCalon = [];
         if ($currentStep == 12) {
             $pasanganCalon = PasanganCalon::where('tipe_pemilihan_id', $tipePemilihan->id)
@@ -40,9 +82,13 @@ class WizardController extends Controller
     public function walikota()
     {
         $tipePemilihan = TipePemilihan::where('nama', 'walikota')->first();
-        $currentStep = session('current_step', 1);
 
-        // Ambil data pasangan calon untuk step 12
+        // Cek apakah data sudah ada
+        if ($this->checkIfDataExists($tipePemilihan->id)) {
+            return redirect()->route('dashboard')->with('error', 'Data untuk pemilihan Walikota sudah pernah diisi!');
+        }
+
+        $currentStep = session('current_step', 1);
         $pasanganCalon = [];
         if ($currentStep == 12) {
             $pasanganCalon = PasanganCalon::where('tipe_pemilihan_id', $tipePemilihan->id)
@@ -56,9 +102,13 @@ class WizardController extends Controller
     public function create()
     {
         $tipePemilihan = TipePemilihan::where('nama', request()->segment(1))->first();
-        $currentStep = session('current_step', 1);
 
-        // Ambil data pasangan calon untuk step 12
+        // Cek apakah data sudah ada
+        if ($this->checkIfDataExists($tipePemilihan->id)) {
+            return redirect()->route('dashboard')->with('error', 'Data untuk pemilihan ini sudah pernah diisi!');
+        }
+
+        $currentStep = session('current_step', 1);
         $pasanganCalon = [];
         if ($currentStep == 12) {
             $pasanganCalon = PasanganCalon::where('tipe_pemilihan_id', $tipePemilihan->id)
@@ -72,6 +122,9 @@ class WizardController extends Controller
     public function store(Request $request)
     {
         $currentStep = session('current_step', 1);
+        if ($this->checkIfDataExists($request->tipe_pemilihan_id)) {
+            return redirect()->route('dashboard')->with('error', 'Data untuk pemilihan ini sudah pernah diisi!');
+        }
 
         if ($currentStep >= 1 && $currentStep <= 10) {
             $request->validate(
@@ -112,7 +165,7 @@ class WizardController extends Controller
                 case 2:
                     JumlahPemilihDptb::create([
                         'id' => Str::uuid(),
-                       'tipe_pemilihan_id' => $request->tipe_pemilihan_id,
+                        'tipe_pemilihan_id' => $request->tipe_pemilihan_id,
                         'laki_laki' => $request->laki_laki,
                         'perempuan' => $request->perempuan,
                         'jumlah' => $request->jumlah,

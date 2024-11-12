@@ -161,7 +161,7 @@ class KelurahanController extends Controller
      */
     public function create()
     {
-        $kecamatans = Kecamatan::all();
+        $kecamatans = Kecamatan::orderBy('nama_kecamatan', 'asc')->get();
         return view('admin.kelurahan.create', compact('kecamatans'));
     }
 
@@ -235,7 +235,7 @@ class KelurahanController extends Controller
     public function edit(string $id)
     {
         $kelurahan = Kelurahan::findOrFail($id);
-        $kecamatans = Kecamatan::all();
+        $kecamatans = Kecamatan::orderBy('nama_kecamatan', 'asc')->get();
         return view('admin.kelurahan.edit', compact('kelurahan', 'kecamatans'));
     }
 
