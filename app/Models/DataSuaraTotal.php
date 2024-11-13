@@ -6,22 +6,25 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\TipePemilihan;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class JumlahPemilihDpt extends Model
+class DataSuaraTotal extends Model
 {
     use HasFactory;
+    use HasUuids;
 
-    protected $table = 'jumlah_pemilih_dpt';
     protected $keyType = 'string';
     public $incrementing = false;
+
+    protected $table = 'data_suara_total';
 
     protected $fillable = [
         'user_id',
         'tipe_pemilihan_id',
-        'laki_laki',
-        'perempuan',
-        'jumlah'
+        'jumlah_suara_sah',
+        'jumlah_suara_tidak_sah',
+        'total_suara_sah_dan_tidak_sah'
     ];
 
     protected static function booted()

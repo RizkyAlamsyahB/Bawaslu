@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jumlah_data_pemilih', function (Blueprint $table) {
+        Schema::create('data_suara_paslon', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->integer('laki_laki');
-            $table->integer('perempuan');
-            $table->integer('jumlah');
-            $table->uuid('tipe_pemilihan_id'); // Ensure this matches the type in the referenced table
+            $table->uuid('user_id');
+            $table->uuid('tipe_pemilihan_id');
+            $table->uuid('pasangan_calon_id');
+            $table->integer('jumlah_suara');
             $table->timestamps();
 
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('tipe_pemilihan_id')->references('id')->on('tipe_pemilihans')->onDelete('cascade');
+            $table->foreign('pasangan_calon_id')->references('id')->on('pasangan_calons')->onDelete('cascade');
         });
     }
 
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jumlah_data_pemilih');
+        Schema::dropIfExists('data_suara_paslon');
     }
 };

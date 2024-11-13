@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->string('nomor_urut');
             $table->uuid('tipe_pemilihan_id');
             $table->timestamps();
-
+            
             $table->foreign('tipe_pemilihan_id')->references('id')->on('tipe_pemilihans')->onDelete('cascade');
         });
     }

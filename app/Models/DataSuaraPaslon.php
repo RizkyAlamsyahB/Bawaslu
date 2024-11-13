@@ -2,26 +2,28 @@
 
 namespace App\Models;
 
-use App\Models\User;
 use Illuminate\Support\Str;
+use App\Models\PasanganCalon;
 use App\Models\TipePemilihan;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class JumlahPemilihDpt extends Model
+class DataSuaraPaslon extends Model
 {
     use HasFactory;
 
-    protected $table = 'jumlah_pemilih_dpt';
-    protected $keyType = 'string';
+    use HasUuids;
+    protected $keyType = 'string';  // Gunakan string untuk UUID
     public $incrementing = false;
 
+    protected $table = 'data_suara_paslon';
+
     protected $fillable = [
-        'user_id',
+        'pasangan_calon_id',
         'tipe_pemilihan_id',
-        'laki_laki',
-        'perempuan',
-        'jumlah'
+        'jumlah_suara',
+        'user_id',
     ];
 
     protected static function booted()
@@ -41,5 +43,10 @@ class JumlahPemilihDpt extends Model
     public function tipePemilihan()
     {
         return $this->belongsTo(TipePemilihan::class, 'tipe_pemilihan_id');
+    }
+
+    public function pasanganCalon()
+    {
+        return $this->belongsTo(PasanganCalon::class, 'pasangan_calon_id');
     }
 }

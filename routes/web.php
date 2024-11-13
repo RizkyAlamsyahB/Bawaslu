@@ -25,7 +25,7 @@ use App\Http\Controllers\JumlahDataPemilihController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Route::get('/dashboard', function () {
@@ -76,6 +76,12 @@ Route::middleware(['auth', 'role:tps,super_admin'])->group(function () {
     Route::get('/gubernur/wizard', [WizardController::class, 'create'])->name('wizard.gubernur');
     Route::get('/walikota/wizard', [WizardController::class, 'create'])->name('wizard.walikota');
     Route::post('/wizard/store', [WizardController::class, 'store'])->name('wizard.store');
+    Route::get('/session/hapus', function () {
+        session()->flush();
+        return "Semua session telah dihapus.";
+    });
+
+
 });
 
 Route::middleware(['auth', 'role:kota'])->group(function () {

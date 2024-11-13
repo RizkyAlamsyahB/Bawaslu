@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('pengguna_hak_pilih_disabilitas', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('user_id');
             $table->integer('laki_laki');
             $table->integer('perempuan');
             $table->integer('jumlah');
             $table->uuid('tipe_pemilihan_id'); // Ensure this matches the type in the referenced table
             $table->timestamps();
 
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('tipe_pemilihan_id')->references('id')->on('tipe_pemilihans')->onDelete('cascade');
         });
     }

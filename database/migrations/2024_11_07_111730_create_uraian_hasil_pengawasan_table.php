@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jumlah_pemilih_disabilitas', function (Blueprint $table) {
+        Schema::create('uraian_hasil_pengawasan', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->integer('laki_laki');
-            $table->integer('perempuan');
-            $table->integer('jumlah');
-            $table->uuid('tipe_pemilihan_id'); // Ensure this matches the type in the referenced table
-            $table->timestamps();
+            $table->uuid('user_id');
+            $table->text('uraian');
+            $table->uuid('tipe_pemilihan_id');
 
+            $table->timestamps();
             $table->foreign('tipe_pemilihan_id')->references('id')->on('tipe_pemilihans')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jumlah_pemilih_disabilitas');
+        Schema::dropIfExists('uraian_hasil_pengawasan');
     }
 };

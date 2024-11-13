@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,15 +12,17 @@ return new class extends Migration
     {
         Schema::create('jumlah_pemilih_dpt', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('user_id');
+            $table->uuid('tipe_pemilihan_id');
             $table->integer('laki_laki');
             $table->integer('perempuan');
             $table->integer('jumlah');
-            $table->uuid('tipe_pemilihan_id'); // Ensure this matches the type in the referenced table
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 
             $table->foreign('tipe_pemilihan_id')->references('id')->on('tipe_pemilihans')->onDelete('cascade');
         });
-
     }
 
     /**

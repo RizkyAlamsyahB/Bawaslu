@@ -13,14 +13,14 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="progress mb-3">
-                        <div class="progress-bar" role="progressbar" style="width: {{ ($currentStep / 12) * 100 }}%"
-                            aria-valuenow="{{ $currentStep }}" aria-valuemin="0" aria-valuemax="12">
-                            Step {{ $currentStep }} dari 12
+                        <div class="progress-bar" role="progressbar" style="width: {{ ($currentStep / 10) * 100 }}%"
+                            aria-valuenow="{{ $currentStep }}" aria-valuemin="0" aria-valuemax="10">
+                            Step {{ $currentStep }} dari 10
                         </div>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <span>Progress: {{ number_format(($currentStep / 12) * 100, 0) }}%</span>
-                        <span>Step {{ $currentStep }}/12</span>
+                        <span>Progress: {{ number_format(($currentStep / 10) * 100, 0) }}%</span>
+                        <span>Step {{ $currentStep }}/10</span>
                     </div>
                 </div>
             </div>
@@ -34,47 +34,39 @@
                             @break
 
                             @case(2)
-                                Form Input Data Jumlah Pemilih DPTB
-                            @break
-
-                            @case(3)
-                                Form Input Data Jumlah Pemilih DPK
-                            @break
-
-                            @case(4)
-                                Form Input Data Jumlah Data Pemilih
-                            @break
-
-                            @case(5)
                                 Form Input Data Pengguna Hak Pilih DPT
                             @break
 
-                            @case(6)
+                            @case(3)
                                 Form Input Data Pengguna Hak Pilih DPTB
                             @break
 
-                            @case(7)
+                            @case(4)
                                 Form Input Data Pengguna Hak Pilih DPK
                             @break
 
-                            @case(8)
+                            @case(5)
                                 Form Input Data Jumlah Pengguna Hak Pilih
                             @break
 
-                            @case(9)
-                                Form Input Data Jumlah Pemilih Disabilitas
-                            @break
-
-                            @case(10)
-                                Form Input Data Pengguna Hak Pilih Disabilitas
-                            @break
-
-                            @case(11)
+                            @case(6)
                                 Form Input Data Penggunaan Surat Suara
                             @break
 
-                            @case(12)
-                                Form Input Data Suara Sah
+                            @case(7)
+                                Form Input Data Pemilih Disabilitas
+                            @break
+
+                            @case(8)
+                                Form Input Data Rincian Perolehan Suara Pasangan Calon
+                            @break
+
+                            @case(9)
+                                Form Input Data Suara Sah dan Tidak Sah
+                            @break
+
+                            @case(10)
+                                Form Input Uraian Hasil Pengawasan
                             @break
                         @endswitch
                     </h4>
@@ -105,15 +97,15 @@
                         @csrf
                         <input type="hidden" name="tipe_pemilihan_id" value="{{ $tipePemilihan->id }}">
 
-                        @if ($currentStep >= 1 && $currentStep <= 10)
-                            <!-- Form untuk step 1-10 (form standar laki-laki, perempuan, jumlah) -->
+                        @if (($currentStep >= 1 && $currentStep <= 5) || $currentStep == 7)
+                            <!-- Form untuk step 1-5 & 7 (form standar laki-laki, perempuan, jumlah) -->
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Laki-laki</label>
                                         <input type="number" class="form-control @error('laki_laki') is-invalid @enderror"
-                                            name="laki_laki" value="{{ old('laki_laki') }}" required min="0"
-                                            oninput="calculateSum()">
+                                            name="laki_laki" id="laki_laki" value="{{ old('laki_laki') }}"
+                                            oninput="calculateSum()" required min="0">
                                         @error('laki_laki')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -123,8 +115,8 @@
                                     <div class="form-group">
                                         <label>Perempuan</label>
                                         <input type="number" class="form-control @error('perempuan') is-invalid @enderror"
-                                            name="perempuan" value="{{ old('perempuan') }}" required min="0"
-                                            oninput="calculateSum()">
+                                            name="perempuan" id="perempuan" value="{{ old('perempuan') }}"
+                                            oninput="calculateSum()" required min="0">
                                         @error('perempuan')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -133,8 +125,8 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Jumlah Yang Diinputkan</label>
-                                        <input type="number" class="form-control @error('jumlah') is-invalid @enderror"
-                                            name="jumlah" value="{{ old('jumlah') }}" required min="0">
+                                        <input type="number" class="form-control" name="jumlah" id="jumlah"
+                                            value="{{ old('jumlah') }}" required min="0">
                                         @error('jumlah')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -152,7 +144,7 @@
                                     </div>
                                 </div>
                             </div>
-                        @elseif($currentStep == 11)
+                        @elseif($currentStep == 6)
                             <!-- Form Penggunaan Surat Suara -->
                             <div class="form-group">
                                 <label>Tipe Pemilihan</label>
@@ -161,9 +153,25 @@
                             </div>
 
                             <div class="row">
+
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Jumlah surat suara yang digunakan</label>
+                                        <input type="number"
+                                            class="form-control @error('surat_suara_digunakan') is-invalid @enderror"
+                                            name="surat_suara_digunakan" value="{{ old('surat_suara_digunakan') }}"
+                                            required min="0" oninput="calculateSuratSuara()">
+                                        @error('surat_suara_digunakan')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Surat Suara Dikembalikan</label>
+                                        <label>Jumlah surat suara yang dikembalikan</label>
                                         <input type="number"
                                             class="form-control @error('surat_suara_dikembalikan') is-invalid @enderror"
                                             name="surat_suara_dikembalikan" value="{{ old('surat_suara_dikembalikan') }}"
@@ -175,7 +183,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Surat Suara Tidak Digunakan</label>
+                                        <label>Jumlah surat suara yang tidak digunakan</label>
                                         <input type="number"
                                             class="form-control @error('surat_suara_tidak_digunakan') is-invalid @enderror"
                                             name="surat_suara_tidak_digunakan"
@@ -191,22 +199,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Surat Suara Digunakan</label>
-                                        <input type="number"
-                                            class="form-control @error('surat_suara_digunakan') is-invalid @enderror"
-                                            name="surat_suara_digunakan" value="{{ old('surat_suara_digunakan') }}"
-                                            required min="0" oninput="calculateSuratSuara()">
-                                        @error('surat_suara_digunakan')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Jumlah Surat Suara yang Diterima</label>
+                                        <label>Jumlah Surat Suara yang diterima</label>
                                         <input type="number"
                                             class="form-control @error('surat_suara_diterima') is-invalid @enderror"
                                             name="surat_suara_diterima" value="{{ old('surat_suara_diterima') }}"
@@ -216,7 +209,6 @@
                                         @enderror
                                     </div>
                                 </div>
-
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Total Penggunaan Surat Suara</label>
@@ -227,68 +219,78 @@
                                         </small>
                                     </div>
                                 </div>
-
                             </div>
-                        @elseif($currentStep == 12)
-                            <!-- Form Data Suara Sah -->
+                        @elseif($currentStep == 8)
+                            <!-- Form Input Suara Per Paslon -->
+                            @foreach ($pasanganCalon as $paslon)
+                                <div class="form-group">
+                                    <label>{{ $paslon->nomor_urut }}. {{ $paslon->nama_pasangan }}</label>
+                                    <input type="number"
+                                        class="form-control @error('paslon_suara.' . $paslon->id) is-invalid @enderror"
+                                        name="paslon_suara[{{ $paslon->id }}]"
+                                        value="{{ old('paslon_suara.' . $paslon->id) }}" required min="0"
+                                        oninput="calculateTotalSuaraPaslon()" min="0">
+                                    @error('paslon_suara.' . $paslon->id)
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            @endforeach
+
+                            <!-- Hidden input untuk total suara paslon -->
+                            <input type="hidden" id="total_suara_paslon" value="0">
+
                             <div class="form-group">
-                                <label>Pasangan Calon</label>
-                                <select name="pasangan_calon_id"
-                                    class="form-control @error('pasangan_calon_id') is-invalid @enderror" required>
-                                    <option value="">Pilih Pasangan Calon</option>
-                                    @foreach ($pasanganCalon as $pc)
-                                        <option value="{{ $pc->id }}"
-                                            {{ old('pasangan_calon_id') == $pc->id ? 'selected' : '' }}>
-                                            {{ $pc->nomor_urut }} - {{ $pc->nama_pasangan }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('pasangan_calon_id')
+                                <label>Total Suara Paslon</label>
+                                <input type="number" class="form-control" id="display_total_suara_paslon" readonly>
+                            </div>
+                        @elseif($currentStep == 9)
+                            <!-- Form Input Total Suara Sah dan Tidak Sah -->
+                            <div class="form-group">
+                                <label>Jumlah Seluruh Suara Sah</label>
+                                <input type="number" name="jumlah_suara_sah"
+                                    class="form-control @error('jumlah_suara_sah') is-invalid @enderror"
+                                    value="{{ old('jumlah_suara_sah') }}" oninput="calculateTotalSuara()" required
+                                    min="0">
+                                @error('jumlah_suara_sah')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Jumlah Suara Sah</label>
-                                        <input type="number"
-                                            class="form-control @error('jumlah_suara_sah') is-invalid @enderror"
-                                            name="jumlah_suara_sah" value="{{ old('jumlah_suara_sah') }}" required
-                                            min="0" oninput="calculateTotal()">
-                                        @error('jumlah_suara_sah')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Jumlah Suara Tidak Sah</label>
-                                        <input type="number"
-                                            class="form-control @error('jumlah_suara_tidak_sah') is-invalid @enderror"
-                                            name="jumlah_suara_tidak_sah" value="{{ old('jumlah_suara_tidak_sah') }}"
-                                            required min="0" oninput="calculateTotal()">
-                                        @error('jumlah_suara_tidak_sah')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
+                            <div class="form-group">
+                                <label>Jumlah Suara Tidak Sah</label>
+                                <input type="number" name="jumlah_suara_tidak_sah"
+                                    class="form-control @error('jumlah_suara_tidak_sah') is-invalid @enderror"
+                                    value="{{ old('jumlah_suara_tidak_sah') }}" oninput="calculateTotalSuara()" required
+                                    min="0">
+                                @error('jumlah_suara_tidak_sah')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="form-group">
-                                <label>Total Suara Sah dan Tidak Sah</label>
-                                <input type="number" class="form-control bg-light" id="total_suara"
-                                    name="total_suara_sah_dan_tidak_sah" readonly>
-                                <small class="form-text text-muted">
-                                    Total akan dihitung otomatis dari jumlah suara sah dan tidak sah
-                                </small>
+                                <label>Jumlah Seluruh Suara Sah dan Tidak Sah</label>
+                                <input type="number" name="total_suara_sah_dan_tidak_sah" class="form-control bg-light"
+                                    id="total_suara_keseluruhan" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Total Suara Keseluruhan</label>
+                                <input type="number" class="form-control bg-light" id="total_suara_final" readonly>
+                            </div>
+                        @elseif($currentStep == 10)
+                            <!-- Form Uraian Hasil Pengawasan -->
+                            <div class="form-group">
+                                <label>Uraian Hasil Pengawasan</label>
+                                <textarea name="uraian" class="form-control @error('uraian') is-invalid @enderror" rows="5" required>{{ old('uraian') }}</textarea>
+                                @error('uraian')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         @endif
 
                         <div class="form-group text-right">
-
                             <button type="submit" class="btn btn-primary">
-                                {{ $currentStep == 12 ? 'Simpan & Selesai' : 'Simpan & Lanjutkan' }}
+                                {{ $currentStep == 10 ? 'Simpan & Selesai' : 'Simpan & Lanjutkan' }}
                             </button>
                         </div>
                     </form>
@@ -296,98 +298,117 @@
             </div>
         </div>
     </section>
-@endsection
 
-@push('scripts')
-    <script>
-        function calculateSum() {
-            if ({{ $currentStep }} >= 1 && {{ $currentStep }} <= 10) {
-                const lakiLaki = parseInt(document.querySelector('input[name="laki_laki"]').value) || 0;
-                const perempuan = parseInt(document.querySelector('input[name="perempuan"]').value) || 0;
-                document.getElementById('calculated_jumlah').value = lakiLaki + perempuan;
+
+    @push('scripts')
+        <script>
+            function calculateSum() {
+                const lakiLaki = parseInt(document.getElementById('laki_laki').value) || 0;
+                const perempuan = parseInt(document.getElementById('perempuan').value) || 0;
+                const jumlah = lakiLaki + perempuan;
+
+                // Hanya kolom "Jumlah Yang Harus Diinputkan" yang diisi otomatis
+                document.getElementById('calculated_jumlah').value = jumlah;
             }
-        }
 
-        function calculateSuratSuara() {
-            if ({{ $currentStep }} == 11) {
-                const dikembalikan = parseInt(document.querySelector('input[name="surat_suara_dikembalikan"]').value) || 0;
-                const tidakDigunakan = parseInt(document.querySelector('input[name="surat_suara_tidak_digunakan"]')
+            function calculateSuratSuara() {
+                const suratSuaraDiterima = parseInt(document.querySelector('input[name="surat_suara_diterima"]').value) || 0;
+                const suratSuaraDigunakan = parseInt(document.querySelector('input[name="surat_suara_digunakan"]').value) || 0;
+                const suratSuaraDikembalikan = parseInt(document.querySelector('input[name="surat_suara_dikembalikan"]')
                     .value) || 0;
-                const digunakan = parseInt(document.querySelector('input[name="surat_suara_digunakan"]').value) || 0;
-                const diterima = parseInt(document.querySelector('input[name="surat_suara_diterima"]').value) || 0;
+                const suratSuaraTidakDigunakan = parseInt(document.querySelector('input[name="surat_suara_tidak_digunakan"]')
+                    .value) || 0;
 
-                const totalPenggunaan = dikembalikan + tidakDigunakan + digunakan;
+                const totalPenggunaan = suratSuaraDigunakan + suratSuaraDikembalikan + suratSuaraTidakDigunakan;
                 document.getElementById('total_penggunaan').value = totalPenggunaan;
+            }
 
-                const totalElement = document.getElementById('total_penggunaan');
-                if (diterima > 0 && totalPenggunaan !== diterima) {
-                    totalElement.classList.add('is-invalid');
-                    totalElement.parentElement.querySelector('.form-text').classList.add('text-danger');
-                } else {
-                    totalElement.classList.remove('is-invalid');
-                    totalElement.parentElement.querySelector('.form-text').classList.remove('text-danger');
+            function calculateTotalSuaraPaslon() {
+                let total = 0;
+                const inputs = document.querySelectorAll('input[name^="paslon_suara"]');
+                inputs.forEach(input => {
+                    total += parseInt(input.value) || 0;
+                });
+
+                document.getElementById('total_suara_paslon').value = total;
+                document.getElementById('display_total_suara_paslon').value = total;
+
+                const suaraSahInput = document.querySelector('input[name="jumlah_suara_sah"]');
+                if (suaraSahInput) {
+                    suaraSahInput.value = total;
+                    calculateTotalSuara();
                 }
             }
-        }
 
-        function calculateTotal() {
-            if ({{ $currentStep }} == 12) {
+            function calculateTotalSuara() {
                 const suaraSah = parseInt(document.querySelector('input[name="jumlah_suara_sah"]').value) || 0;
                 const suaraTidakSah = parseInt(document.querySelector('input[name="jumlah_suara_tidak_sah"]').value) || 0;
-                document.getElementById('total_suara').value = suaraSah + suaraTidakSah;
+
+                // Hitung total suara sah dan tidak sah
+                const total = suaraSah + suaraTidakSah;
+                document.getElementById('total_suara_keseluruhan').value = total;
+                document.getElementById('total_suara_final').value = total;
             }
-        }
 
-        function validateForm() {
-            if ({{ $currentStep }} >= 1 && {{ $currentStep }} <= 10) {
-                const lakiLaki = document.querySelector('input[name="laki_laki"]');
-                const perempuan = document.querySelector('input[name="perempuan"]');
-                const jumlah = document.querySelector('input[name="jumlah"]');
-                const calculatedJumlah = document.getElementById('calculated_jumlah');
 
-                if (!lakiLaki.value) {
-                    alert('Kolom laki-laki harus diisi');
-                    lakiLaki.focus();
-                    return false;
+
+            function validateForm() {
+                if ({{ $currentStep }} == 6) {
+                    const suratSuaraDiterima = parseInt(document.querySelector('input[name="surat_suara_diterima"]').value) ||
+                        0;
+                    const totalPenggunaan = parseInt(document.getElementById('total_penggunaan').value) || 0;
+
+                    if (suratSuaraDiterima !== totalPenggunaan) {
+                        alert("Total penggunaan surat suara harus sama dengan jumlah surat suara yang diterima");
+                        return false;
+                    }
+                } else if ({{ $currentStep }} == 8) {
+                    const totalSuaraPaslon = parseInt(document.getElementById('total_suara_paslon').value) || 0;
+                    if (totalSuaraPaslon < 0) {
+                        alert("Total suara paslon tidak boleh kurang dari 0");
+                        return false;
+                    }
+                } else if ({{ $currentStep }} == 9) {
+                    const totalSuaraPaslon = parseInt(document.getElementById('total_suara_paslon').value) || 0;
+                    const suaraSah = parseInt(document.querySelector('input[name="jumlah_suara_sah"]').value) || 0;
+
+                    if (totalSuaraPaslon !== suaraSah) {
+                        alert("Jumlah suara sah harus sama dengan total suara seluruh paslon");
+                        return false;
+                    }
+
+                    const suaraTidakSah = parseInt(document.querySelector('input[name="jumlah_suara_tidak_sah"]').value) || 0;
+                    const totalSuaraKeseluruhan = parseInt(document.getElementById('total_suara_keseluruhan').value) || 0;
+
+                    if ((suaraSah + suaraTidakSah) !== totalSuaraKeseluruhan) {
+                        alert("Total suara sah dan tidak sah harus sama dengan jumlah seluruh suara");
+                        return false;
+                    }
+                } else if ({{ $currentStep }} == 10) {
+                    const uraian = document.querySelector('textarea[name="uraian"]').value.trim();
+                    if (uraian.length < 10) {
+                        alert("Uraian hasil pengawasan terlalu pendek (minimal 10 karakter)");
+                        return false;
+                    }
                 }
-
-                if (!perempuan.value) {
-                    alert('Kolom perempuan harus diisi');
-                    perempuan.focus();
-                    return false;
-                }
-
-                if (!jumlah.value) {
-                    alert('Kolom jumlah harus diisi');
-                    jumlah.focus();
-                    return false;
-                }
-
-                if (parseInt(jumlah.value) !== parseInt(calculatedJumlah.value)) {
-                    alert("Jumlah yang diinputkan harus sama dengan jumlah yang dihitung (Laki-laki + Perempuan)");
-                    return false;
-                }
-            } else if ({{ $currentStep }} == 11) {
-                const diterima = parseInt(document.querySelector('input[name="surat_suara_diterima"]').value);
-                const totalPenggunaan = parseInt(document.getElementById('total_penggunaan').value);
-
-                if (totalPenggunaan !== diterima) {
-                    alert("Total penggunaan surat suara harus sama dengan jumlah surat suara yang diterima");
-                    return false;
-                }
+                return true;
             }
-            return true;
-        }
 
-        // Calculate on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            if ({{ $currentStep }} >= 1 && {{ $currentStep }} <= 10) {
+            document.addEventListener('DOMContentLoaded', function() {
+                if ({{ $currentStep }} == 6) {
+                    calculateSuratSuara();
+                } else if ({{ $currentStep }} == 8) {
+                    calculateTotalSuaraPaslon();
+                } else if ({{ $currentStep }} == 9) {
+                    calculateTotalSuara();
+                }
+            });
+            document.addEventListener('DOMContentLoaded', function() {
+                // Memastikan nilai awal dihitung
                 calculateSum();
-            } else if ({{ $currentStep }} == 11) {
-                calculateSuratSuara();
-            } else if ({{ $currentStep }} == 12) {
-                calculateTotal();
-            }
-        });
-    </script>
-@endpush
+            });
+        </script>
+    @endpush
+
+
+@endsection

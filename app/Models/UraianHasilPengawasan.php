@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Models\User;
@@ -8,16 +7,25 @@ use App\Models\TipePemilihan;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class JumlahPemilihDptb extends Model
+class UraianHasilPengawasan extends Model
 {
     use HasFactory;
 
-    protected $table = 'jumlah_pemilih_dptb';
+    protected $table = 'uraian_hasil_pengawasan';
 
-    protected $keyType = 'string';  // Gunakan string untuk UUID
-    public $incrementing = false;  // Nonaktifkan auto-increment karena UUID tidak auto-increment
+    public $incrementing = false;
+    protected $keyType = 'uuid';
 
-    protected $fillable = [ 'laki_laki', 'perempuan', 'jumlah', 'tipe_pemilihan_id' ]; // Tambahkan tipe_pemilihan_id di sini
+    protected $fillable = [
+        'user_id',
+        'uraian',
+        'tipe_pemilihan_id',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     protected static function booted()
     {
@@ -27,12 +35,6 @@ class JumlahPemilihDptb extends Model
             }
         });
     }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-
     public function tipePemilihan()
     {
         return $this->belongsTo(TipePemilihan::class, 'tipe_pemilihan_id');

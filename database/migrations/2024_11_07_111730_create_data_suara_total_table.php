@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jumlah_pemilih_dpk', function (Blueprint $table) {
+        Schema::create('data_suara_total', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->integer('laki_laki');
-            $table->integer('perempuan');
-            $table->integer('jumlah');
-            $table->uuid('tipe_pemilihan_id'); // Ensure this matches the type in the referenced table
+            $table->uuid('user_id');
+            $table->uuid('tipe_pemilihan_id');
+            $table->integer('jumlah_suara_sah');
+            $table->integer('jumlah_suara_tidak_sah');
+            $table->integer('total_suara_sah_dan_tidak_sah');
             $table->timestamps();
-
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('tipe_pemilihan_id')->references('id')->on('tipe_pemilihans')->onDelete('cascade');
         });
     }
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jumlah_pemilih_dpk');
+        Schema::dropIfExists('data_suara_total');
     }
 };
